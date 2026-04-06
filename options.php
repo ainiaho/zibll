@@ -3406,6 +3406,27 @@ function optionsframework_options()
 	);
 
 	$options[] = array(
+		'name' => '搜索页显示 AI 总结',
+		'id' => 'ai_search_summary',
+		'type' => "checkbox",
+		'std' => true,
+		'desc' => '在搜索结果页面显示 AI 智能总结'
+	);
+
+	$options[] = array(
+		'name' => '显示样式',
+		'id' => 'ai_chatbox_style',
+		'desc' => '选择 AI 聊天框的显示方式',
+		'std' => 'float',
+		'type' => 'radio',
+		'options' => array(
+			'float' => '悬浮按钮（右下角）',
+			'search' => '仅在搜索页显示',
+			'both' => '同时显示'
+		)
+	);
+
+	$options[] = array(
 		'name' => 'API 密钥',
 		'id' => 'ai_api_key',
 		'desc' => '填写您的 AI API 密钥（如 OpenAI API Key）',
