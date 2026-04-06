@@ -1,49 +1,55 @@
-# Compiled and build artifacts
-*.pyc
-__pycache__/
-*.o
-*.obj
-*.class
-*.exe
-*.dll
-*.so
-*.a
-*.out
+```
+# Build artifacts
+css/zhihu-style.css
 
-# Dependencies
-.venv/
-venv/
-node_modules/
-dist/
-build/
-target/
-.gradle/
-.mypy_cache/
-.pytest_cache/
-
-# Logs and temp files
-*.log
+# Cache and temporary files
+*.cache
 *.tmp
-*.swp
-*.swo
-
-# Environment
-.env
-.env.local
-.env.*
-
-# Editors
-.vscode/
-.idea/
-
-# System files
+*.temp
 .DS_Store
 Thumbs.db
 
-# Coverage
+# Logs
+*.log
+
+# Environment files
+.env
+.env.local
+*.env.*
+
+# IDE specific
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Dependencies (if any directories exist)
+node_modules/
+vendor/
+
+# Coverage reports
 coverage/
 htmlcov/
-.coverage
+*.coverage
+
+# Python specific (if applicable)
+__pycache__/
+*.pyc
+*.pyo
+.Python
+*.so
+*.egg-info/
+
+# Compiled files
+*.o
+*.obj
+*.a
+*.lib
+*.dll
+*.so
+*.dylib
+*.exe
+*.out
 
 # Compressed files
 *.zip
@@ -68,3 +74,4 @@ htmlcov/
 *.tar.bz2
 *.tar.xz
 *.tar.zst
+```
