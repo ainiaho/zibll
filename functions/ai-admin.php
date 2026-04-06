@@ -34,6 +34,8 @@ function zib_ai_register_settings() {
     register_setting('zib_ai_settings', 'ai_system_prompt');
     register_setting('zib_ai_settings', 'ai_knowledge_base_enabled');
     register_setting('zib_ai_settings', 'ai_max_tokens');
+    register_setting('zib_ai_settings', 'ai_proxy_enabled');
+    register_setting('zib_ai_settings', 'ai_proxy_url');
 }
 add_action('admin_init', 'zib_ai_register_settings');
 
@@ -111,6 +113,28 @@ function zib_ai_admin_page() {
                                     启用知识库检索增强
                                 </label>
                                 <p class="description">启用后，AI 会先检索知识库相关内容再回答</p>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <th scope="row"><label for="ai_proxy_enabled">启用代理</label></th>
+                            <td>
+                                <label>
+                                    <input type="checkbox" id="ai_proxy_enabled" name="ai_proxy_enabled" value="1" 
+                                           <?php checked(get_option('ai_proxy_enabled'), 1); ?>>
+                                    启用代理服务器
+                                </label>
+                                <p class="description">如果 API 服务商限制您所在的地区，请启用代理</p>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <th scope="row"><label for="ai_proxy_url">代理地址</label></th>
+                            <td>
+                                <input type="text" id="ai_proxy_url" name="ai_proxy_url" 
+                                       value="<?php echo esc_attr(get_option('ai_proxy_url', '')); ?>" 
+                                       class="large-text" placeholder="http://127.0.0.1:7890">
+                                <p class="description">输入您的代理服务器地址（如：http://127.0.0.1:7890）</p>
                             </td>
                         </tr>
                     </table>
