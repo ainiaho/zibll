@@ -1,4 +1,7 @@
 ## 更新日志
+### v2.3
+修复 `functions/ai-frontend.php` 文件缺少 `<?php` 开头标签导致的语法错误 (Parse error: Unclosed '{' on line 15)
+
 ### v2.2
 调整社会化登录按钮的顺序
 修复因网速过慢可能会造成幻灯片错位的bug
