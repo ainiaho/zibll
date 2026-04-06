@@ -752,8 +752,7 @@ function _new_strlen($str, $charset = 'utf-8')
 		}
 	} else {
 		for ($i = 0; $i < $len; $i++) {
-			$c = ord($str{
-				$i});
+			$c = ord($str[$i]);
 			if ($c > 127) {
 				$p = 1;
 			} else {
