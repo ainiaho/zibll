@@ -479,6 +479,11 @@ function _load_scripts()
 		// common css
 		_cssloader(array('bootstrap' => _pz('js_outlink') ? $css[_pz('js_outlink')]['bootstrap'] : 'bootstrap.min', 'fontawesome' => _pz('js_outlink') ? $css[_pz('js_outlink')]['fontawesome'] : 'fontawesome.min', 'main' => 'main', 'beautify' => 'beautify'));
 
+		// 搜索页面 CSS
+		if (is_search()) {
+			_cssloader(array('search-style' => 'search-style'));
+		}
+
 		// AI 聊天 CSS
 		if (_pz('ai_enabled')) {
 			_cssloader(array('ai-chat' => 'ai-chat'));
