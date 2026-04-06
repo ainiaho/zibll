@@ -3,6 +3,24 @@
  * 包含现代化 UI 元素、动画效果、视觉优化
  */
 
+/* ==================== 去除链接下划线 ==================== */
+/* 全局去除所有链接的默认下划线 */
+a, a:hover, a:focus, a:active, a:visited {
+    text-decoration: none !important;
+    outline: none !important;
+}
+
+/* 特别处理点击时的下划线 */
+a:active, a:focus {
+    text-decoration: none !important;
+    outline: none !important;
+}
+
+/* 按钮内的链接 */
+.but a, .but a:hover, .but a:focus, .but a:active {
+    text-decoration: none !important;
+}
+
 /* ==================== 全局美化变量 ==================== */
 :root {
     /* 渐变主题色 */
