@@ -27,7 +27,7 @@ $cat = isset($wp_query->query_vars['cat']) ? $wp_query->query_vars['cat'] : '';
 
 				<?php
 					// AI 智能总结模块
-					if (function_exists('zib_ai_frontend_chatbox') && _zib_get('ai_function') && $s) {
+					if (function_exists('zib_ai_frontend_chatbox') && _pz('ai_chatbox_enabled', false) && $s) {
 						echo '<div class="main-bg theme-box box-body radius8 main-shadow" style="margin-top: 20px;">';
 						echo '<div class="title-h-left"><i class="fa fa-robot"></i> AI 智能总结</div>';
 						echo '<div id="ai-search-summary" class="padding10" data-keyword="' . esc_attr($s) . '">';
