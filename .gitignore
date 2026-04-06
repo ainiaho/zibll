@@ -1,5 +1,31 @@
-(css/main.css is just a source file modification, no build artifacts, dependencies, or temp files in the changes)
+```
+# Compiled and build artifacts
+*.pyc
+__pycache__/
 
-```css
+# Dependencies
+vendor/
+node_modules/
 
+# Logs and temp files
+*.log
+*.tmp
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# Editors
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Build and distribution
+dist/
+build/
+target/
 ```

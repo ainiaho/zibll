@@ -521,8 +521,10 @@ function zib_update_search_keywords($s)
 {
     if (_pz('search_popular_key', true)) {
 
-        $keywords = array();
         $keywords = get_option('search_keywords');
+        if (!$keywords || !is_array($keywords)) {
+            $keywords = array();
+        }
         $max_num = (int) _pz('search_popular_key_num', 20);
         if ($keywords && count($keywords) >= $max_num) {
             arsort($keywords);
