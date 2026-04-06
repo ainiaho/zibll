@@ -13,7 +13,8 @@ $functions = array(
     'zib-single',
     'zib-comments-list',
     'zib-svg-icon',
-    'function-ajax'
+    'function-ajax',
+    'zib-ai'
 );
 
 foreach ($functions as $function) {
