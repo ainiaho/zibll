@@ -1805,20 +1805,25 @@ select.form-control {
     display: inline-block;
     cursor: pointer;
     color: var(--muted-color);
+    max-width: 100%;
 }
 
 .option-dropdown-items {
     position: absolute;
-    width: 120px;
+    width: 160px;
     padding: 4px;
     visibility: hidden;
     z-index: 9;
     max-height: 300px;
+    left: 0;
 }
 
 .option-dropdown-items>a {
     padding: 3px 10px;
     display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .option-dropdown-items>a:hover {
@@ -2892,21 +2897,23 @@ nav .fa-angle-down {
     position: absolute;
     left: 0;
     bottom: -2px;
+    max-width: 40%;
 }
 
 .search-input-cat>span {
-    width: 56px;
+    max-width: 100%;
     display: inline-block;
     vertical-align: top;
+    padding-right: 15px;
 }
 
 .search-input-cat+input {
-    margin-left: 85px;
-    width: calc(100% - 120px);
+    margin-left: 120px;
+    width: calc(100% - 140px);
 }
 
 .show-more-cat+input {
-    margin-left: 115px;
+    margin-left: 145px;
 }
 
 /*-----------文章页面--------文章页面--------文章页面--------文章页面--------文章页面--------文章页面----------文章页面----------------------*/
