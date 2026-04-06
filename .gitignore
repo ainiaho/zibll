@@ -1,5 +1,1 @@
-(update_log.md is a source file, so no ignores needed)
-
-```text
-
-```
+Nothing needs to be added to .gitignore since the only change is adding a PHP source file (`functions/ai-frontend-fixed.php`) which is not a build artifact, dependency, or temporary file.
