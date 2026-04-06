@@ -25,7 +25,7 @@ function zib_ai_add_admin_menu() {
         'zib_ai_admin_page'
     );
 }
-add_action('admin_menu', 'zib_ai_add_admin_menu');
+add_action('admin_menu', 'zib_ai_add_admin_menu', 20);
 
 /**
  * 注册设置
