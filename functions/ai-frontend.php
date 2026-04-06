@@ -183,6 +183,7 @@ function zib_ai_frontend_chatbox() {
         }
     });
     </script>
+    <?php
 }
 add_action('wp_footer', 'zib_ai_frontend_chatbox');
 
