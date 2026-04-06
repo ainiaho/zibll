@@ -752,3 +752,461 @@ a:hover::after {
         0 4px 8px rgba(0, 0, 0, 0.1),
         0 16px 32px rgba(0, 0, 0, 0.15);
 }
+
+/* ==================== 新增界面优化 ==================== */
+
+/* 导航栏增强 */
+.navbar, .header-top, .navbar-collapse {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-sm);
+}
+
+.navbar::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--theme-color), transparent);
+    opacity: 0.3;
+}
+
+/* 导航菜单项悬停效果 */
+.nav > li > a, .nav-menu-item a {
+    position: relative;
+    overflow: hidden;
+}
+
+.nav > li > a::before, .nav-menu-item a::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: var(--gradient-primary);
+    transform: translateX(-50%);
+    transition: width 0.3s ease;
+}
+
+.nav > li:hover > a::before, .nav-menu-item a:hover::before {
+    width: 80%;
+}
+
+/* 首页卡片网格优化 */
+.posts-grid {
+    gap: 20px;
+}
+
+.posts-item {
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark-theme .posts-item {
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+/* 文章标题美化 */
+.item-title a {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.item-title a:hover {
+    color: var(--theme-color);
+}
+
+/* 文章摘要美化 */
+.item-excerpt {
+    color: var(--muted-color);
+    line-height: 1.8;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* 标签和分类美化 */
+.item-meta .badge, .item-meta .label-tag {
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+/* 时间显示优化 */
+.item-meta time {
+    color: var(--muted-color);
+    font-size: 0.9em;
+}
+
+/* 点赞和评论数美化 */
+.item-meta .fa-heart, .item-meta .fa-comment {
+    transition: transform 0.3s;
+}
+
+.item-meta .fa-heart:hover, .item-meta .fa-comment:hover {
+    transform: scale(1.2);
+}
+
+/* 侧边栏小工具增强 */
+.zib-widget {
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.3s;
+}
+
+.zib-widget:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.dark-theme .zib-widget {
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+/* 热门标签云 */
+.tag-cloud-link {
+    display: inline-block;
+    padding: 6px 14px;
+    margin: 4px;
+    border-radius: var(--radius-full);
+    background: var(--muted-bg-color);
+    color: var(--main-color);
+    font-size: 0.9em !important;
+    transition: all 0.3s;
+    border: 1px solid transparent;
+}
+
+.tag-cloud-link:hover {
+    background: var(--gradient-primary);
+    color: #fff !important;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* 最新文章列表 */
+.widget_posts_list li {
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--main-border-color);
+    transition: all 0.3s;
+}
+
+.widget_posts_list li:last-child {
+    border-bottom: none;
+}
+
+.widget_posts_list li:hover {
+    padding-left: 10px;
+    background: linear-gradient(90deg, rgba(102, 126, 234, 0.05), transparent);
+}
+
+/* 友情链接美化 */
+.friendlink a {
+    display: inline-block;
+    padding: 8px 16px;
+    margin: 5px;
+    border-radius: var(--radius-md);
+    background: var(--muted-bg-color);
+    transition: all 0.3s;
+    border: 1px solid transparent;
+}
+
+.friendlink a:hover {
+    background: var(--gradient-secondary);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* 文章内图片圆角和阴影优化 */
+.single-content img, .wp-block-image img {
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    max-width: 100%;
+    height: auto;
+}
+
+/* 表格美化 */
+.single-content table, .wp-block-table table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.single-content th, .wp-block-table th {
+    background: var(--gradient-primary);
+    color: #fff;
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+}
+
+.single-content td, .wp-block-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--main-border-color);
+}
+
+.single-content tr:hover, .wp-block-table tr:hover {
+    background: var(--muted-bg-color);
+}
+
+/* 列表美化 */
+.single-content ul, .single-content ol {
+    padding-left: 25px;
+}
+
+.single-content li {
+    margin: 8px 0;
+    line-height: 1.8;
+    position: relative;
+}
+
+/* 分割线美化 */
+.single-content hr {
+    border: none;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--theme-color), transparent);
+    margin: 30px 0;
+}
+
+/* 按钮组美化 */
+.btn-group .but {
+    border-radius: var(--radius-md) !important;
+}
+
+.btn-group .but:first-child {
+    border-radius: var(--radius-full) 0 0 var(--radius-full) !important;
+}
+
+.btn-group .but:last-child {
+    border-radius: 0 var(--radius-full) var(--radius-full) 0 !important;
+}
+
+/* 进度条美化 */
+.progress {
+    border-radius: var(--radius-full);
+    background: var(--muted-bg-color);
+    overflow: hidden;
+}
+
+.progress-bar {
+    background: var(--gradient-primary);
+    border-radius: var(--radius-full);
+    transition: width 0.6s ease;
+}
+
+/* 警告框类型增强 */
+.alert-success {
+    background: linear-gradient(135deg, rgba(79, 172, 254, 0.1), rgba(0, 242, 254, 0.1));
+    border-left: 4px solid #4facfe;
+}
+
+.alert-info {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+    border-left: 4px solid #667eea;
+}
+
+.alert-warning {
+    background: linear-gradient(135deg, rgba(250, 112, 154, 0.1), rgba(254, 225, 64, 0.1));
+    border-left: 4px solid #fa709a;
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, rgba(245, 147, 108, 0.1), rgba(240, 147, 251, 0.1));
+    border-left: 4px solid #f5936c;
+}
+
+/* 表单复选框和单选框美化 */
+input[type="checkbox"], input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--muted-border-color);
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s;
+    vertical-align: middle;
+}
+
+input[type="radio"] {
+    border-radius: 50%;
+}
+
+input[type="checkbox"]:checked, input[type="radio"]:checked {
+    background: var(--gradient-primary);
+    border-color: var(--theme-color);
+}
+
+input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    color: #fff;
+    font-size: 14px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: #fff;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* 下拉菜单美化 */
+.dropdown-menu {
+    border-radius: var(--radius-lg);
+    border: none;
+    box-shadow: var(--shadow-lg);
+    padding: 10px 0;
+}
+
+.dropdown-item {
+    padding: 10px 20px;
+    transition: all 0.3s;
+}
+
+.dropdown-item:hover {
+    background: linear-gradient(90deg, rgba(102, 126, 234, 0.1), transparent);
+    color: var(--theme-color);
+    padding-left: 25px;
+}
+
+/* 面包屑导航美化 */
+.breadcrumb {
+    background: var(--muted-bg-color);
+    border-radius: var(--radius-full);
+    padding: 10px 20px;
+}
+
+.breadcrumb-item a {
+    color: var(--theme-color);
+}
+
+.breadcrumb-item.active {
+    color: var(--muted-color);
+}
+
+/* 空状态美化 */
+.empty-content, .no-results {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted-color);
+}
+
+.empty-content i, .no-results i {
+    font-size: 64px;
+    margin-bottom: 20px;
+    opacity: 0.3;
+}
+
+/* 焦点图轮播美化 */
+.swiper-container {
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+}
+
+.swiper-pagination-bullet {
+    background: #fff;
+    opacity: 0.6;
+    transition: all 0.3s;
+}
+
+.swiper-pagination-bullet-active {
+    opacity: 1;
+    transform: scale(1.3);
+}
+
+/* 视频容器美化 */
+.video-container {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+}
+
+/* 代码高亮增强 */
+pre code {
+    padding: 20px;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* 表情符号优化 */
+.emoji, .wp-smiley {
+    vertical-align: middle;
+    transition: transform 0.3s;
+}
+
+.emoji:hover, .wp-smiley:hover {
+    transform: scale(1.2) rotate(10deg);
+}
+
+/* 移动端优化增强 */
+@media (max-width: 768px) {
+    .posts-grid {
+        gap: 15px;
+    }
+    
+    .zib-widget {
+        padding: 15px;
+    }
+    
+    .modal-content {
+        margin: 10px;
+        border-radius: var(--radius-lg);
+    }
+    
+    /* 移动端触摸反馈 */
+    .but:active, .posts-item:active {
+        transform: scale(0.98);
+    }
+}
+
+/* 打印样式优化 */
+@media print {
+    .navbar, .sidebar, .footer, .scroll-top {
+        display: none !important;
+    }
+    
+    .posts-item, .card {
+        box-shadow: none;
+        break-inside: avoid;
+    }
+}
+
+/* 可访问性增强 */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* 高对比度模式支持 */
+@media (prefers-contrast: high) {
+    :root {
+        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+        --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+        --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+}
