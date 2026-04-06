@@ -13,9 +13,22 @@ if (!defined('ABSPATH')) {
  * 在前端加载 AI 聊天窗口
  */
 function zib_ai_frontend_chatbox() {
-    if (!_pz('ai_chatbox_enabled', false)) {
+    // 兼容旧配置项 ai_enabled 和新配置项 ai_chatbox_enabled
+    $ai_enabled = _pz('ai_enabled', false);
+    $chatbox_style = _pz('ai_chatbox_style', 'float'); // float, search, both
+    
+    // 根据显示样式决定是否显示
+    if (!$ai_enabled) {
         return;
     }
+    
+    // 如果设置为仅在搜索页显示，且当前不是搜索页，则不显示
+    if ($chatbox_style === 'search' && !is_search()) {
+        return;
+    }
+    
+    // 如果设置为仅在搜索页显示或同时显示，或者是悬浮模式，都显示
+    // (float 和 both 都会显示悬浮按钮)
     
     ?>
     <div id="zib-ai-chatbox" style="position: fixed; bottom: 80px; right: 20px; width: 350px; background: white; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.15); z-index: 9999; display: none;">
@@ -190,30 +203,42 @@ add_action('wp_footer', 'zib_ai_frontend_chatbox');
 /**
  * 在主题选项中添加 AI 聊天框开关
  */
-function zib_ai_add_theme_options($sections) {
-    $sections[] = array(
-        'title' => 'AI 聊天框',
-        'id' => 'ai_chatbox',
-        'icon' => 'fa-robot',
-        'fields' => array(
-            array(
-                'title' => '启用 AI 聊天框',
-                'desc' => '在网站右下角显示 AI 智能助手聊天窗口',
-                'id' => 'ai_chatbox_enabled',
-                'type' => 'switch',
-                'default' => false
-            ),
-            array(
-                'title' => '欢迎语',
-                'desc' => '聊天框打开时显示的欢迎消息',
-                'id' => 'ai_chatbox_welcome',
-                'type' => 'text',
-                'default' => '您好！我是 AI 助手，有什么可以帮您的吗？'
-            )
-        )
-    );
+function zib_ai_add_theme_options($options) {
+    // 查找 AI 智能助手部分的位置，在其后添加聊天框选项
+    $new_options = array();
+    $found_ai_heading = false;
+    $added_chatbox_options = false;
     
-    return $sections;
+    foreach ($options as $option) {
+        $new_options[] = $option;
+        
+        // 找到 AI 智能助手的 heading
+        if (isset($option['type']) && $option['type'] === 'heading' && 
+            isset($option['name']) && strpos($option['name'], 'AI 智能助手') !== false) {
+            $found_ai_heading = true;
+        }
+        
+        // 在 AI 功能启用选项后添加聊天框专用选项
+        if ($found_ai_heading && !$added_chatbox_options && 
+            isset($option['id']) && $option['id'] === 'ai_enabled') {
+            
+            $new_options[] = array(
+                'name' => '显示样式',
+                'id' => 'ai_chatbox_style',
+                'desc' => '选择 AI 聊天框的显示方式',
+                'std' => 'float',
+                'type' => 'radio',
+                'options' => array(
+                    'float' => '悬浮按钮（右下角）',
+                    'search' => '仅在搜索页显示',
+                    'both' => '同时显示'
+                )
+            );
+            
+            $added_chatbox_options = true;
+        }
+    }
+    
+    return $new_options;
 }
-// 如果主题支持选项扩展，则添加此过滤器
-add_filter('zib_theme_options_sections', 'zib_ai_add_theme_options');
+add_filter('of_options', 'zib_ai_add_theme_options');
