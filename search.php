@@ -22,6 +22,19 @@ get_header();
 				</div>
 
 				<?php
+					// AI 智能总结模块
+					if (function_exists('zib_ai_frontend_chatbox') && _zib_get('ai_function') && $s) {
+						echo '<div class="main-bg theme-box box-body radius8 main-shadow" style="margin-top: 20px;">';
+						echo '<div class="title-h-left"><i class="fa fa-robot"></i> AI 智能总结</div>';
+						echo '<div id="ai-search-summary" class="padding10" data-keyword="' . esc_attr($s) . '">';
+						echo '<div class="text-center muted-color"><i class="fa fa-spinner fa-spin"></i> 正在生成针对 "' . esc_html($s) . '" 的智能总结...</div>';
+						echo '</div>';
+						echo '</div>';
+						
+						// 确保加载聊天框组件（如果尚未加载）
+						zib_ai_frontend_chatbox();
+					}
+
 				if (!have_posts()) {
 					echo '<div class="main-bg theme-box box-body radius8 main-shadow text-center">';
 					echo '<img class="search-null-img" src="' . get_stylesheet_directory_uri() . '/img/search-null.png">';
