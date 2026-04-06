@@ -13,8 +13,11 @@ if (!defined('ABSPATH')) {
  * 添加管理菜单
  */
 function zib_ai_add_admin_menu() {
+    // 获取正确的父菜单 slug
+    $parent_slug = 'framework_Zibll';
+    
     add_submenu_page(
-        'zibll',
+        $parent_slug,
         'AI 与知识库',
         'AI 与知识库',
         'manage_options',
