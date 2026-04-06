@@ -1,28 +1,19 @@
-```
 # Compiled and build artifacts
 *.pyc
 __pycache__/
 
 # Dependencies
-vendor/
 node_modules/
+venv/
+.venv/
+.env
+.env.local
+.env.*
 
 # Logs and temp files
 *.log
 *.tmp
-*.swp
-
-# Environment
-.env
-.env.local
-*.env.*
 
 # Editors
 .vscode/
 .idea/
-
-# Build directories
-dist/
-build/
-target/
-```
