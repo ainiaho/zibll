@@ -87,6 +87,22 @@ function zib_ai_frontend_chatbox() {
     #zib-ai-chat-messages {
         scroll-behavior: smooth;
     }
+    /* 搜索页面 AI 总结样式 */
+    #ai-search-summary {
+        line-height: 1.8;
+    }
+    #ai-search-summary .ai-summary-content {
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border-left: 4px solid #667eea;
+    }
+    #ai-search-summary .ai-summary-error {
+        color: #dc3545;
+        padding: 15px;
+        background: #fff5f5;
+        border-radius: 8px;
+    }
     </style>
     
     <script type="text/javascript">
@@ -181,6 +197,27 @@ function zib_ai_frontend_chatbox() {
         localStorage.setItem('zib_ai_chat_history', JSON.stringify(history));
     }
     
+    // 搜索页面 AI 总结功能
+    function zibLoadSearchSummary() {
+        let summaryContainer = document.getElementById('ai-search-summary');
+        if (!summaryContainer) return;
+        
+        let keyword = summaryContainer.getAttribute('data-keyword');
+        if (!keyword) return;
+        
+        jQuery.post('<?php echo admin_url('admin-ajax.php'); ?>', {
+            action: 'zib_ai_search_summary',
+            nonce: '<?php echo wp_create_nonce("zib_ai_nonce"); ?>',
+            keyword: keyword
+        }, function(response) {
+            if (response.success) {
+                summaryContainer.innerHTML = '<div class="ai-summary-content">' + response.data.content + '</div>';
+            } else {
+                summaryContainer.innerHTML = '<div class="ai-summary-error"><i class="fa fa-exclamation-triangle"></i> ' + response.data.message + '</div>';
+            }
+        });
+    }
+    
     // 页面加载时从 localStorage 恢复历史对话
     jQuery(document).ready(function($) {
         let history = localStorage.getItem('zib_ai_chat_history');
@@ -194,6 +231,9 @@ function zib_ai_frontend_chatbox() {
                 console.error('Failed to load chat history');
             }
         }
+        
+        // 如果是搜索页面，加载 AI 总结
+        zibLoadSearchSummary();
     });
     </script>
     <?php

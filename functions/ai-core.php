@@ -337,6 +337,41 @@ add_action('wp_ajax_zib_ai_chat', 'zib_ai_chat_ajax');
 add_action('wp_ajax_nopriv_zib_ai_chat', 'zib_ai_chat_ajax');
 
 /**
+ * AI 搜索总结 AJAX 处理函数
+ */
+function zib_ai_search_summary_ajax() {
+    check_ajax_referer('zib_ai_nonce', 'nonce');
+    
+    $keyword = sanitize_text_field($_POST['keyword'] ?? '');
+    
+    if (empty($keyword)) {
+        wp_send_json_error(array('message' => '关键词不能为空'));
+        return;
+    }
+    
+    // 构建搜索总结的提示词
+    $system_prompt = "你是一个智能搜索助手。用户搜索了关键词：{$keyword}。请根据这个关键词，生成一段简洁的总结性内容，帮助用户了解相关主题的核心信息。要求：\n1. 内容简洁明了，200-300 字左右\n2. 使用 HTML 格式（可以使用<p>、<ul>、<li>等标签）\n3. 如果涉及步骤或要点，使用列表展示\n4. 语言友好专业";
+    
+    $messages = array(
+        array('role' => 'system', 'content' => $system_prompt),
+        array('role' => 'user', 'content' => "请帮我总结一下关于\"{$keyword}\"的核心信息")
+    );
+    
+    $result = Zib_AI_Handler::chat($messages);
+    
+    if (is_wp_error($result)) {
+        wp_send_json_error(array('message' => $result->get_error_message()));
+        return;
+    }
+    
+    wp_send_json_success(array(
+        'content' => $result['content']
+    ));
+}
+add_action('wp_ajax_zib_ai_search_summary', 'zib_ai_search_summary_ajax');
+add_action('wp_ajax_nopriv_zib_ai_search_summary', 'zib_ai_search_summary_ajax');
+
+/**
  * 初始化
  */
 function zib_ai_init() {
