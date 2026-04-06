@@ -1,6 +1,6 @@
 /**
- * 搜索页面美化样式
- * 优化搜索体验，视觉更加自然舒适
+ * 搜索页面美化样式 - 极简风格
+ * 简洁视觉，无点击变色，保留平滑动画
  */
 
 /* ========== 搜索页面整体布局 ========== */
@@ -17,35 +17,35 @@
 /* 搜索卡片优化 */
 .search-card {
     background: var(--main-bg-color);
-    border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-    padding: 30px;
-    margin-bottom: 25px;
-    transition: box-shadow 0.3s ease;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    padding: 24px;
+    margin-bottom: 20px;
+    transition: box-shadow 0.25s ease;
 }
 
 .search-card:hover {
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 /* 搜索标题区域 */
 .search-header-section {
-    margin-bottom: 25px;
+    margin-bottom: 20px;
 }
 
 .search-header-section .title-h-left {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 600;
     color: var(--key-color);
-    margin-bottom: 20px;
-    padding-bottom: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
     border-bottom: 1px solid var(--muted-border-color);
 }
 
 .search-header-section .title-h-left:before {
-    width: 4px;
-    height: 20px;
-    background: linear-gradient(180deg, var(--theme-color), var(--focus-color));
+    width: 3px;
+    height: 18px;
+    background: var(--theme-color);
     border-radius: 2px;
     top: 0;
     bottom: auto;
@@ -54,7 +54,7 @@
 /* ========== 搜索输入框优化 ========== */
 .search-input-wrapper {
     position: relative;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .search-input-wrapper .search-input {
@@ -65,22 +65,22 @@
 .search-input form.relative.line-form {
     position: relative;
     background: var(--body-bg-color);
-    border-radius: 10px;
-    padding: 8px 15px;
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 6px 12px;
+    transition: all 0.25s ease;
+    border: 1px solid var(--muted-border-color);
 }
 
 .search-input form.relative.line-form:focus-within {
     background: var(--main-bg-color);
     border-color: var(--theme-color);
-    box-shadow: 0 0 0 4px rgba(240, 68, 148, 0.08);
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.02);
 }
 
 /* 搜索输入框 */
 .search-input input[type="text"].line-form-input {
     width: 100%;
-    padding: 12px 50px 12px 10px;
+    padding: 10px 45px 10px 10px;
     font-size: 15px;
     border: none;
     background: transparent;
@@ -99,12 +99,12 @@
     right: 10px;
     top: 50%;
     transform: translateY(-50%);
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     border: none;
-    background: var(--theme-color);
-    color: #fff;
-    border-radius: 8px;
+    background: transparent;
+    color: var(--muted-3-color);
+    border-radius: 6px;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -114,8 +114,8 @@
 }
 
 .search-input .abs-right button[type="submit"]:hover {
-    background: var(--focus-color);
-    transform: translateY(-50%) scale(1.05);
+    color: var(--theme-color);
+    background: var(--body-bg-color);
 }
 
 .search-input .abs-right button[type="submit"] svg {
@@ -142,14 +142,14 @@
 .search-input-cat.option-dropdown > span {
     display: inline-flex;
     align-items: center;
-    padding: 6px 12px;
-    background: var(--main-bg-color);
+    padding: 5px 10px;
+    background: transparent;
     border-radius: 6px;
     font-size: 13px;
-    color: var(--main-color);
+    color: var(--muted-2-color);
     cursor: pointer;
     transition: all 0.2s ease;
-    border: 1px solid var(--muted-border-color);
+    border: 1px solid transparent;
     max-width: 140px;
     white-space: nowrap;
     overflow: hidden;
@@ -157,35 +157,41 @@
 }
 
 .search-input-cat.option-dropdown:hover > span {
-    color: var(--theme-color);
-    border-color: var(--theme-color);
+    color: var(--main-color);
+    background: var(--body-bg-color);
 }
 
 .search-input-cat.option-dropdown .fa-sort {
-    margin-left: 6px;
+    margin-left: 5px;
     font-size: 12px;
-    opacity: 0.6;
+    opacity: 0.5;
     flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.search-input-cat.option-dropdown.active .fa-sort {
+    transform: rotate(180deg);
 }
 
 /* 分类下拉菜单 */
 .search-input-cat .option-dropdown-items {
     background: var(--main-bg-color);
     border: 1px solid var(--muted-border-color);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    padding: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    padding: 6px;
     min-width: 150px;
     max-height: 300px;
     overflow-y: auto;
+    border-radius: 8px;
 }
 
 .search-input-cat .option-dropdown-items a {
     display: block;
-    padding: 8px 12px;
+    padding: 7px 10px;
     color: var(--main-color);
     text-decoration: none;
     border-radius: 6px;
-    transition: all 0.2s ease;
+    transition: all 0.15s ease;
     font-size: 14px;
     white-space: nowrap;
     overflow: hidden;
@@ -194,44 +200,43 @@
 
 .search-input-cat .option-dropdown-items a:hover {
     background: var(--body-bg-color);
-    color: var(--theme-color);
 }
 
 /* 调整输入框左边距以适应分类选择器 */
 .search-input-cat + input[type="text"] {
-    margin-left: 150px;
-    width: calc(100% - 170px);
+    margin-left: 145px;
+    width: calc(100% - 165px);
 }
 
 .show-more-cat + input[type="text"] {
-    margin-left: 150px;
+    margin-left: 145px;
 }
 
 /* ========== 热门搜索标签优化 ========== */
 .search-hot-keywords {
-    margin-top: 20px;
-    padding-top: 20px;
+    margin-top: 16px;
+    padding-top: 16px;
     border-top: 1px dashed var(--muted-border-color);
 }
 
 .search-hot-keywords .muted-color {
     font-size: 13px;
     color: var(--muted-2-color);
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     display: inline-block;
 }
 
 .search-hot-keywords .text-center {
     text-align: left !important;
-    line-height: 2.2;
+    line-height: 2.1;
 }
 
 .search-input .search_keywords {
     display: inline-block;
-    padding: 5px 12px;
-    margin: 3px 6px 3px 0;
+    padding: 4px 10px;
+    margin: 2px 5px 2px 0;
     background: var(--body-bg-color);
-    color: var(--main-color);
+    color: var(--muted-2-color);
     font-size: 13px;
     border-radius: 6px;
     text-decoration: none;
@@ -240,32 +245,31 @@
 }
 
 .search-input .search_keywords:hover {
-    background: var(--theme-color);
-    color: #fff;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(240, 68, 148, 0.25);
+    background: var(--main-bg-color);
+    color: var(--main-color);
+    border-color: var(--muted-border-color);
 }
 
 .search-input .search_keywords.muted-2-color {
-    color: var(--main-color);
+    color: var(--muted-2-color);
 }
 
 /* ========== 搜索结果列表优化 ========== */
 .search-results-section {
-    margin-top: 25px;
+    margin-top: 20px;
 }
 
 .search-results-section .box-body.nobottom {
     padding-bottom: 0;
     border-bottom: 1px solid var(--muted-border-color);
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .search-results-section .title-h-left {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
     color: var(--key-color);
-    padding-bottom: 10px;
+    padding-bottom: 8px;
 }
 
 .search-results-section .title-h-left .focus-color {
@@ -275,7 +279,7 @@
 
 /* 文章列表项优化 */
 .posts-list-item {
-    padding: 20px 0;
+    padding: 16px 0;
     border-bottom: 1px solid var(--muted-border-color);
     transition: all 0.2s ease;
 }
@@ -285,12 +289,12 @@
 }
 
 .posts-list-item:hover {
-    padding-left: 8px;
+    padding-left: 6px;
 }
 
 /* 文章标题 */
 .posts-list-item .item-title a {
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 600;
     color: var(--key-color);
     line-height: 1.5;
@@ -306,53 +310,53 @@
 .posts-list-item .item-title mark,
 .posts-list-item .item-title b.focus-color {
     color: var(--theme-color);
-    background: rgba(240, 68, 148, 0.08);
-    padding: 1px 4px;
+    background: rgba(0, 0, 0, 0.03);
+    padding: 1px 3px;
     border-radius: 3px;
     font-weight: 700;
 }
 
 /* 文章摘要 */
 .posts-list-item .item-desc {
-    margin-top: 10px;
+    margin-top: 8px;
     color: var(--muted-color);
     font-size: 14px;
-    line-height: 1.7;
+    line-height: 1.65;
 }
 
 /* 文章元信息 */
 .posts-list-item .meta-info {
-    margin-top: 12px;
+    margin-top: 10px;
     font-size: 12px;
     color: var(--muted-3-color);
 }
 
 .posts-list-item .meta-info > span {
-    margin-right: 15px;
+    margin-right: 12px;
     display: inline-flex;
     align-items: center;
 }
 
 .posts-list-item .meta-info i {
-    margin-right: 5px;
-    opacity: 0.7;
+    margin-right: 4px;
+    opacity: 0.6;
 }
 
 /* ========== 无结果页面优化 ========== */
 .search-no-results {
     text-align: center;
-    padding: 60px 30px;
+    padding: 50px 24px;
 }
 
 .search-no-results .search-null-img {
-    max-width: 280px;
+    max-width: 240px;
     width: 100%;
-    margin: 0 auto 30px;
-    opacity: 0.8;
+    margin: 0 auto 24px;
+    opacity: 0.7;
 }
 
 .search-no-results .muted-color.separator {
-    font-size: 16px;
+    font-size: 15px;
     color: var(--muted-2-color);
     margin: 0;
     padding: 0;
@@ -360,23 +364,23 @@
 }
 
 .search-no-results .search-suggestions {
-    margin-top: 30px;
-    padding-top: 30px;
+    margin-top: 24px;
+    padding-top: 24px;
     border-top: 1px dashed var(--muted-border-color);
 }
 
 .search-no-results .search-suggestions p {
     color: var(--muted-2-color);
     font-size: 14px;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
 }
 
 /* ========== AI 智能总结模块优化 ========== */
 #ai-search-summary {
-    background: linear-gradient(135deg, rgba(240, 68, 148, 0.03) 0%, rgba(240, 68, 148, 0.08) 100%);
-    border: 1px solid rgba(240, 68, 148, 0.15);
-    border-radius: 10px;
-    padding: 20px;
+    background: var(--body-bg-color);
+    border: 1px solid var(--muted-border-color);
+    border-radius: 8px;
+    padding: 16px;
 }
 
 #ai-search-summary .text-center {
@@ -385,33 +389,33 @@
 }
 
 #ai-search-summary .fa-spinner {
-    color: var(--theme-color);
-    margin-right: 8px;
+    color: var(--muted-3-color);
+    margin-right: 6px;
 }
 
 /* AI 总结标题 */
 .search-ai-section .title-h-left {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
 }
 
 .search-ai-section .title-h-left i.fa-robot {
-    color: var(--theme-color);
-    font-size: 18px;
+    color: var(--muted-3-color);
+    font-size: 17px;
 }
 
 /* ========== 分页优化 ========== */
 .ajaxpager .paging {
-    margin-top: 30px;
+    margin-top: 24px;
     text-align: center;
 }
 
 .ajaxpager .paging a,
 .ajaxpager .paging span {
     display: inline-block;
-    padding: 8px 16px;
-    margin: 0 4px;
+    padding: 6px 12px;
+    margin: 0 3px;
     background: var(--main-bg-color);
     color: var(--main-color);
     border-radius: 6px;
@@ -421,10 +425,8 @@
 }
 
 .ajaxpager .paging a:hover {
-    background: var(--theme-color);
-    color: #fff;
-    border-color: var(--theme-color);
-    transform: translateY(-2px);
+    background: var(--body-bg-color);
+    border-color: var(--muted-border-color);
 }
 
 .ajaxpager .paging .current {
@@ -436,23 +438,23 @@
 /* ========== 响应式适配 ========== */
 @media (max-width: 768px) {
     .search-card {
-        padding: 20px 15px;
-        border-radius: 10px;
+        padding: 16px 12px;
+        border-radius: 8px;
     }
     
     .search-header-section .title-h-left {
-        font-size: 18px;
+        font-size: 17px;
     }
     
     .search-input input[type="text"].line-form-input {
         font-size: 14px;
-        padding: 10px 45px 10px 10px;
+        padding: 9px 42px 9px 10px;
     }
     
     .search-input-cat.option-dropdown > span {
         max-width: 100px;
         font-size: 12px;
-        padding: 5px 8px;
+        padding: 4px 7px;
     }
     
     .search-input-cat + input[type="text"],
@@ -462,13 +464,13 @@
     }
     
     .search-input .search_keywords {
-        padding: 4px 10px;
+        padding: 3px 8px;
         font-size: 12px;
-        margin: 2px 4px 2px 0;
+        margin: 2px 3px 2px 0;
     }
     
     .posts-list-item .item-title a {
-        font-size: 16px;
+        font-size: 15px;
     }
     
     .posts-list-item .item-desc {
@@ -476,21 +478,21 @@
     }
     
     .search-no-results {
-        padding: 40px 20px;
+        padding: 32px 16px;
     }
     
     .search-no-results .search-null-img {
-        max-width: 200px;
+        max-width: 180px;
     }
 }
 
 /* ========== 深色模式适配 ========== */
 .dark-theme .search-card {
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
 .dark-theme .search-card:hover {
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .dark-theme .search-input form.relative.line-form {
@@ -498,26 +500,22 @@
 }
 
 .dark-theme .search-input-cat.option-dropdown > span {
-    background: var(--muted-bg-color);
+    background: transparent;
 }
 
 .dark-theme .search-input .search_keywords {
     background: var(--muted-bg-color);
 }
 
-.dark-theme .search-input .search_keywords:hover {
-    box-shadow: 0 2px 8px rgba(240, 68, 148, 0.4);
-}
-
 .dark-theme #ai-search-summary {
-    background: linear-gradient(135deg, rgba(240, 68, 148, 0.05) 0%, rgba(240, 68, 148, 0.12) 100%);
+    background: var(--muted-bg-color);
 }
 
 /* ========== 动画效果 ========== */
 @keyframes fadeInUp {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(15px);
     }
     to {
         opacity: 1;
@@ -526,15 +524,15 @@
 }
 
 .search-card {
-    animation: fadeInUp 0.4s ease-out;
+    animation: fadeInUp 0.35s ease-out;
 }
 
 .posts-list-item {
-    animation: fadeInUp 0.3s ease-out backwards;
+    animation: fadeInUp 0.25s ease-out backwards;
 }
 
-.posts-list-item:nth-child(1) { animation-delay: 0.05s; }
-.posts-list-item:nth-child(2) { animation-delay: 0.1s; }
-.posts-list-item:nth-child(3) { animation-delay: 0.15s; }
-.posts-list-item:nth-child(4) { animation-delay: 0.2s; }
-.posts-list-item:nth-child(5) { animation-delay: 0.25s; }
+.posts-list-item:nth-child(1) { animation-delay: 0.04s; }
+.posts-list-item:nth-child(2) { animation-delay: 0.08s; }
+.posts-list-item:nth-child(3) { animation-delay: 0.12s; }
+.posts-list-item:nth-child(4) { animation-delay: 0.16s; }
+.posts-list-item:nth-child(5) { animation-delay: 0.2s; }
