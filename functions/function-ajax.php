@@ -85,3 +85,66 @@ function zib_ajax_signup_captcha()
 }
 add_action('wp_ajax_signup_captcha', 'zib_ajax_signup_captcha');
 add_action('wp_ajax_nopriv_signup_captcha', 'zib_ajax_signup_captcha');
+
+/**
+ * AI 聊天 AJAX 处理
+ */
+function zib_ajax_ai_chat() {
+    header('Content-type:application/json; Charset=utf-8');
+    
+    if (!check_ajax_referer('zib_ai_nonce', 'nonce', false)) {
+        echo json_encode(array('error' => 1, 'msg' => '安全验证失败'));
+        exit;
+    }
+    
+    $message = !empty($_POST['message']) ? sanitize_textarea_field($_POST['message']) : '';
+    $history = !empty($_POST['history']) ? json_decode(stripslashes($_POST['history']), true) : array();
+    
+    if (empty($message)) {
+        echo json_encode(array('error' => 1, 'msg' => '请输入问题'));
+        exit;
+    }
+    
+    // 调用 AI 聊天（带知识库）
+    $result = zib_ai_chat_with_kb($message, $history);
+    
+    if (isset($result['error'])) {
+        echo json_encode(array('error' => 1, 'msg' => $result['error']));
+        exit;
+    }
+    
+    echo json_encode(array(
+        'error' => 0,
+        'response' => $result['response'],
+        'usage' => $result['usage']
+    ));
+    exit;
+}
+add_action('wp_ajax_ai_chat', 'zib_ajax_ai_chat');
+add_action('wp_ajax_nopriv_ai_chat', 'zib_ajax_ai_chat');
+
+/**
+ * 知识库搜索 AJAX 处理
+ */
+function zib_ajax_kb_search() {
+    header('Content-type:application/json; Charset=utf-8');
+    
+    $query = !empty($_POST['query']) ? sanitize_text_field($_POST['query']) : '';
+    $limit = !empty($_POST['limit']) ? (int)$_POST['limit'] : 5;
+    
+    if (empty($query)) {
+        echo json_encode(array('error' => 1, 'msg' => '请输入搜索内容'));
+        exit;
+    }
+    
+    $results = zib_kb_search($query, $limit);
+    
+    echo json_encode(array(
+        'error' => 0,
+        'results' => $results,
+        'count' => count($results)
+    ));
+    exit;
+}
+add_action('wp_ajax_kb_search', 'zib_ajax_kb_search');
+add_action('wp_ajax_nopriv_kb_search', 'zib_ajax_kb_search');

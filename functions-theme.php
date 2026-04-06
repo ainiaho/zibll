@@ -21,6 +21,7 @@ require_once(get_theme_file_path('/functions/functions.php'));
 require_once(get_theme_file_path('/vendor/autoload.php'));
 require_once(get_theme_file_path('/oauth/oauth.php'));
 require_once(get_theme_file_path('/zibpay/functions.php'));
+require_once(get_theme_file_path('/functions/zib-ai.php'));
 
 if (is_admin()) {
 	require_once(get_theme_file_path('/functions-admin.php'));
@@ -477,6 +478,11 @@ function _load_scripts()
 
 		// common css
 		_cssloader(array('bootstrap' => _pz('js_outlink') ? $css[_pz('js_outlink')]['bootstrap'] : 'bootstrap.min', 'fontawesome' => _pz('js_outlink') ? $css[_pz('js_outlink')]['fontawesome'] : 'fontawesome.min', 'main' => 'main'));
+
+		// AI 聊天 CSS
+		if (_pz('ai_enabled')) {
+			_cssloader(array('ai-chat' => 'ai-chat'));
+		}
 
 		// page css
 		if (is_page_template('pages/newposts.php')) {

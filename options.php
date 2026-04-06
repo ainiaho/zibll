@@ -3391,6 +3391,89 @@ function optionsframework_options()
 		'type' => "html"
 	);
 
+	// AI 与知识库功能配置
+	$options[] = array(
+		'name' => __('AI 智能助手', 'zib_language'),
+		'type' => 'heading'
+	);
+
+	$options[] = array(
+		'name' => '启用 AI 功能',
+		'id' => 'ai_enabled',
+		'type' => "checkbox",
+		'std' => false,
+		'desc' => '开启后将显示 AI 聊天功能'
+	);
+
+	$options[] = array(
+		'name' => 'API 密钥',
+		'id' => 'ai_api_key',
+		'desc' => '填写您的 AI API 密钥（如 OpenAI API Key）',
+		'class' => 'mini',
+		'std' => '',
+		'type' => 'text'
+	);
+
+	$options[] = array(
+		'name' => 'API 地址',
+		'id' => 'ai_api_url',
+		'desc' => 'AI API 请求地址',
+		'class' => 'mini',
+		'std' => 'https://api.openai.com/v1/chat/completions',
+		'type' => 'text'
+	);
+
+	$options[] = array(
+		'name' => 'AI 模型',
+		'id' => 'ai_model',
+		'desc' => '选择使用的 AI 模型',
+		'class' => 'mini',
+		'std' => 'gpt-3.5-turbo',
+		'type' => 'text'
+	);
+
+	$options[] = array(
+		'name' => '最大 Token 数',
+		'id' => 'ai_max_tokens',
+		'desc' => '单次响应最大 Token 数量',
+		'class' => 'mini',
+		'std' => '1000',
+		'type' => 'text'
+	);
+
+	$options[] = array(
+		'name' => '温度参数',
+		'id' => 'ai_temperature',
+		'desc' => '控制回答随机性 (0-2，越高越随机)',
+		'class' => 'mini',
+		'std' => '0.7',
+		'type' => 'text'
+	);
+
+	$options[] = array(
+		'name' => '系统提示词',
+		'id' => 'ai_system_prompt',
+		'desc' => 'AI 助手的角色设定和行为规范',
+		'settings' => array('rows' => 4),
+		'std' => '你是一个有帮助的助手，服务于一个 WordPress 网站。请友好、专业地回答用户的问题。',
+		'type' => 'textarea'
+	);
+
+	$options[] = array(
+		'name' => '启用知识库',
+		'id' => 'kb_enabled',
+		'type' => "checkbox",
+		'std' => false,
+		'desc' => '开启后 AI 将结合知识库内容回答问题'
+	);
+
+	$options[] = array(
+		'id' => 'kb_description',
+		'class' => 'op-multicheck',
+		'html' => '<div class="options-notice"><div class="explain"><p>知识库功能允许您创建专门的知识文章，AI 会自动检索相关知识来增强回答准确性。</p><p>启用后可在后台「知识库」菜单中管理知识文章。</p></div></div>',
+		'type' => "html"
+	);
+
 	$options[] = array(
 		'name' => __((zib_is_update() ? '主题更新' : '主题文档'), 'zib_language'),
 		'type' => 'heading'

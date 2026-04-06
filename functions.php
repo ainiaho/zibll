@@ -15,3 +15,8 @@ require get_stylesheet_directory() . '/functions-theme.php';
   * 请将您的代码放置在下方
   * 主题更新请自行备份您的自定义代码
   */
+
+// 加载 AI 与知识库功能模块
+require get_stylesheet_directory() . '/functions/ai-core.php';
+require get_stylesheet_directory() . '/functions/ai-admin.php';
+require get_stylesheet_directory() . '/functions/ai-frontend.php';
