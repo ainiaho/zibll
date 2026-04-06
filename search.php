@@ -1,5 +1,9 @@
 <?php
 get_header();
+// 获取搜索关键词和分类信息
+global $wp_query;
+$s = isset($wp_query->query_vars['s']) ? $wp_query->query_vars['s'] : '';
+$cat = isset($wp_query->query_vars['cat']) ? $wp_query->query_vars['cat'] : '';
 ?>
 <?php if (function_exists('dynamic_sidebar')) {
 	echo '<div class="container fluid-widget">';
