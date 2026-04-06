@@ -83,7 +83,11 @@ function zib_screenshot_share()
 				banner: '<?php echo esc_attr(zib_share_img()) ?>',
 				title: '<?php echo esc_attr(the_title() . get_the_subtitle()) ?>',
 				content: '<?php echo esc_attr(zib_get_excerpt(70)) ?>',
-				tags: '<?php echo esc_attr('作者: ' . get_the_author() . '分类: ' . get_the_category()[0]->cat_name) ?>',
+				tags: '<?php 
+					$categories = get_the_category();
+					$cat_name = !empty($categories[0]) ? $categories[0]->cat_name : '';
+					echo esc_attr('作者：' . get_the_author() . '分类：' . $cat_name);
+				?>',
 				logo: '<?php echo esc_attr(_pz('share_logo')) ?>',
 				description: '<?php echo esc_attr(_pz(' share_desc ', '扫描二维码阅读全文 ')) ?>',
 			}
