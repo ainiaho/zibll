@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
  * 在前端加载 AI 聊天窗口
  */
 function zib_ai_frontend_chatbox() {
-    if (!zib_get_option('ai_chatbox_enabled', false)) {
+    if (!_pz('ai_chatbox_enabled', false)) {
         return;
     }
     

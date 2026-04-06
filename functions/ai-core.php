@@ -18,21 +18,21 @@ class Zib_AI_Config {
      * 获取 API 密钥
      */
     public static function get_api_key() {
-        return zib_get_option('ai_api_key', '');
+        return _pz('ai_api_key', '');
     }
     
     /**
      * 获取 API 端点
      */
     public static function get_api_endpoint() {
-        return zib_get_option('ai_api_endpoint', 'https://api.openai.com/v1/chat/completions');
+        return _pz('ai_api_endpoint', 'https://api.openai.com/v1/chat/completions');
     }
     
     /**
      * 获取模型名称
      */
     public static function get_model() {
-        return zib_get_option('ai_model', 'gpt-3.5-turbo');
+        return _pz('ai_model', 'gpt-3.5-turbo');
     }
     
     /**
@@ -40,21 +40,21 @@ class Zib_AI_Config {
      */
     public static function get_system_prompt() {
         $default = '你是一个有帮助的助手，基于知识库内容回答用户问题。如果知识库中没有相关信息，请如实告知。';
-        return zib_get_option('ai_system_prompt', $default);
+        return _pz('ai_system_prompt', $default);
     }
     
     /**
      * 是否启用知识库
      */
     public static function is_knowledge_base_enabled() {
-        return zib_get_option('ai_knowledge_base_enabled', false);
+        return _pz('ai_knowledge_base_enabled', false);
     }
     
     /**
      * 获取最大上下文长度
      */
     public static function get_max_tokens() {
-        return zib_get_option('ai_max_tokens', 2000);
+        return _pz('ai_max_tokens', 2000);
     }
 }
 

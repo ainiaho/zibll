@@ -733,8 +733,7 @@ function _new_strlen($str, $charset = 'utf-8')
 	$len = strlen($str);
 	if ($charset == 'utf-8') {
 		for ($i = 0; $i < $len; $i++) {
-			$c = ord($str{
-				$i});
+			$c = ord($str[$i]);
 			if ($c > 252) {
 				$p = 5;
 			} elseif ($c > 248) {
