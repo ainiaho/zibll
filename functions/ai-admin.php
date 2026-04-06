@@ -10,21 +10,31 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * 添加管理菜单
+ * 在主题设置的 AI 部分添加子菜单
  */
-function zib_ai_add_admin_menu() {
-    // 添加顶级菜单
-    add_menu_page(
-        'AI 与知识库',
-        'AI 与知识库',
+function zib_ai_add_admin_submenu() {
+    // 获取主题框架的菜单 slug (framework_Zibll)
+    $name = '';
+    if (function_exists('framework_option_args') && isset(framework_option_args()['name'])) {
+        $name = framework_option_args()['name'];
+    }
+    if ('' == $name) {
+        $name = get_option('stylesheet');
+        $name = preg_replace("/\W/", "_", strtolower($name));
+    }
+    $parent_slug = 'framework_' . $name;
+    
+    // 添加为框架页面的子菜单
+    add_submenu_page(
+        $parent_slug,
+        '知识库管理',
+        '知识库管理',
         'manage_options',
-        'zib-ai',
-        'zib_ai_admin_page',
-        'dashicons-brain',
-        62
+        'zib-knowledge-base',
+        'zib_ai_knowledge_base_page'
     );
 }
-add_action('admin_menu', 'zib_ai_add_admin_menu');
+add_action('admin_menu', 'zib_ai_add_admin_submenu', 20);
 
 /**
  * 注册设置
@@ -42,107 +52,122 @@ function zib_ai_register_settings() {
 add_action('admin_init', 'zib_ai_register_settings');
 
 /**
- * 后台页面 HTML
+ * 后台页面 HTML - 知识库管理页面
  */
-function zib_ai_admin_page() {
+function zib_ai_knowledge_base_page() {
     ?>
     <div class="wrap">
-        <h1>AI 与知识库管理</h1>
+        <h1>知识库管理</h1>
         
         <div style="display: flex; gap: 20px;">
-            <!-- 左侧：设置面板 -->
+            <!-- 左侧：AI 设置面板 -->
             <div style="flex: 1; max-width: 600px;">
-                <form method="post" action="options.php">
-                    <?php settings_fields('zib_ai_settings'); ?>
-                    <?php do_settings_sections('zib_ai_settings'); ?>
-                    
-                    <table class="form-table">
-                        <tr>
-                            <th scope="row"><label for="ai_api_key">API 密钥</label></th>
-                            <td>
-                                <input type="password" id="ai_api_key" name="ai_api_key" 
-                                       value="<?php echo esc_attr(get_option('ai_api_key')); ?>" 
-                                       class="regular-text" placeholder="sk-...">
-                                <p class="description">输入您的 AI API 密钥（如 OpenAI、DeepSeek 等）</p>
-                            </td>
-                        </tr>
+                <div class="card">
+                    <h2>AI 设置</h2>
+                    <form method="post" action="options.php">
+                        <?php settings_fields('zib_ai_settings'); ?>
+                        <?php do_settings_sections('zib_ai_settings'); ?>
                         
-                        <tr>
-                            <th scope="row"><label for="ai_api_endpoint">API 端点</label></th>
-                            <td>
-                                <input type="url" id="ai_api_endpoint" name="ai_api_endpoint" 
-                                       value="<?php echo esc_attr(get_option('ai_api_endpoint', 'https://api.openai.com/v1/chat/completions')); ?>" 
-                                       class="large-text">
-                                <p class="description">AI API 的请求地址</p>
-                            </td>
-                        </tr>
+                        <table class="form-table">
+                            <tr>
+                                <th scope="row"><label for="ai_api_key">API 密钥</label></th>
+                                <td>
+                                    <input type="password" id="ai_api_key" name="ai_api_key" 
+                                           value="<?php echo esc_attr(get_option('ai_api_key')); ?>" 
+                                           class="regular-text" placeholder="sk-...">
+                                    <p class="description">输入您的 AI API 密钥（如 OpenAI、DeepSeek 等）</p>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <th scope="row"><label for="ai_api_endpoint">API 端点</label></th>
+                                <td>
+                                    <input type="url" id="ai_api_endpoint" name="ai_api_endpoint" 
+                                           value="<?php echo esc_attr(get_option('ai_api_endpoint', 'https://api.openai.com/v1/chat/completions')); ?>" 
+                                           class="large-text">
+                                    <p class="description">AI API 的请求地址</p>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <th scope="row"><label for="ai_model">模型名称</label></th>
+                                <td>
+                                    <input type="text" id="ai_model" name="ai_model" 
+                                           value="<?php echo esc_attr(get_option('ai_model', 'gpt-3.5-turbo')); ?>" 
+                                           class="regular-text" placeholder="gpt-3.5-turbo">
+                                    <p class="description">例如：gpt-3.5-turbo, gpt-4, deepseek-chat 等</p>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <th scope="row"><label for="ai_max_tokens">最大 Token 数</label></th>
+                                <td>
+                                    <input type="number" id="ai_max_tokens" name="ai_max_tokens" 
+                                           value="<?php echo esc_attr(get_option('ai_max_tokens', 2000)); ?>" 
+                                           class="small-text" min="100" max="8000">
+                                    <p class="description">单次回复的最大 Token 数量</p>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <th scope="row"><label for="ai_system_prompt">系统提示词</label></th>
+                                <td>
+                                    <textarea id="ai_system_prompt" name="ai_system_prompt" 
+                                              rows="4" class="large-text"><?php echo esc_textarea(get_option('ai_system_prompt', '你是一个有帮助的助手，基于知识库内容回答用户问题。如果知识库中没有相关信息，请如实告知。')); ?></textarea>
+                                    <p class="description">设定 AI 的角色和行为准则</p>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <th scope="row">启用知识库</th>
+                                <td>
+                                    <label>
+                                        <input type="checkbox" name="ai_knowledge_base_enabled" value="1" 
+                                               <?php checked(get_option('ai_knowledge_base_enabled'), 1); ?>>
+                                        启用知识库检索增强
+                                    </label>
+                                    <p class="description">启用后，AI 会先检索知识库相关内容再回答</p>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <th scope="row"><label for="ai_proxy_enabled">启用代理</label></th>
+                                <td>
+                                    <label>
+                                        <input type="checkbox" id="ai_proxy_enabled" name="ai_proxy_enabled" value="1" 
+                                               <?php checked(get_option('ai_proxy_enabled'), 1); ?>>
+                                        启用代理服务器
+                                    </label>
+                                    <p class="description">如果 API 服务商限制您所在的地区，请启用代理</p>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <th scope="row"><label for="ai_proxy_url">代理地址</label></th>
+                                <td>
+                                    <input type="text" id="ai_proxy_url" name="ai_proxy_url" 
+                                           value="<?php echo esc_attr(get_option('ai_proxy_url', '')); ?>" 
+                                           class="large-text" placeholder="http://127.0.0.1:7890">
+                                    <p class="description">输入您的代理服务器地址（如：http://127.0.0.1:7890）</p>
+                                </td>
+                            </tr>
+                        </table>
                         
-                        <tr>
-                            <th scope="row"><label for="ai_model">模型名称</label></th>
-                            <td>
-                                <input type="text" id="ai_model" name="ai_model" 
-                                       value="<?php echo esc_attr(get_option('ai_model', 'gpt-3.5-turbo')); ?>" 
-                                       class="regular-text" placeholder="gpt-3.5-turbo">
-                                <p class="description">例如：gpt-3.5-turbo, gpt-4, deepseek-chat 等</p>
-                            </td>
-                        </tr>
-                        
-                        <tr>
-                            <th scope="row"><label for="ai_max_tokens">最大 Token 数</label></th>
-                            <td>
-                                <input type="number" id="ai_max_tokens" name="ai_max_tokens" 
-                                       value="<?php echo esc_attr(get_option('ai_max_tokens', 2000)); ?>" 
-                                       class="small-text" min="100" max="8000">
-                                <p class="description">单次回复的最大 Token 数量</p>
-                            </td>
-                        </tr>
-                        
-                        <tr>
-                            <th scope="row"><label for="ai_system_prompt">系统提示词</label></th>
-                            <td>
-                                <textarea id="ai_system_prompt" name="ai_system_prompt" 
-                                          rows="4" class="large-text"><?php echo esc_textarea(get_option('ai_system_prompt', '你是一个有帮助的助手，基于知识库内容回答用户问题。如果知识库中没有相关信息，请如实告知。')); ?></textarea>
-                                <p class="description">设定 AI 的角色和行为准则</p>
-                            </td>
-                        </tr>
-                        
-                        <tr>
-                            <th scope="row">启用知识库</th>
-                            <td>
-                                <label>
-                                    <input type="checkbox" name="ai_knowledge_base_enabled" value="1" 
-                                           <?php checked(get_option('ai_knowledge_base_enabled'), 1); ?>>
-                                    启用知识库检索增强
-                                </label>
-                                <p class="description">启用后，AI 会先检索知识库相关内容再回答</p>
-                            </td>
-                        </tr>
-                        
-                        <tr>
-                            <th scope="row"><label for="ai_proxy_enabled">启用代理</label></th>
-                            <td>
-                                <label>
-                                    <input type="checkbox" id="ai_proxy_enabled" name="ai_proxy_enabled" value="1" 
-                                           <?php checked(get_option('ai_proxy_enabled'), 1); ?>>
-                                    启用代理服务器
-                                </label>
-                                <p class="description">如果 API 服务商限制您所在的地区，请启用代理</p>
-                            </td>
-                        </tr>
-                        
-                        <tr>
-                            <th scope="row"><label for="ai_proxy_url">代理地址</label></th>
-                            <td>
-                                <input type="text" id="ai_proxy_url" name="ai_proxy_url" 
-                                       value="<?php echo esc_attr(get_option('ai_proxy_url', '')); ?>" 
-                                       class="large-text" placeholder="http://127.0.0.1:7890">
-                                <p class="description">输入您的代理服务器地址（如：http://127.0.0.1:7890）</p>
-                            </td>
-                        </tr>
-                    </table>
-                    
-                    <?php submit_button('保存设置'); ?>
-                </form>
+                        <?php submit_button('保存设置'); ?>
+                    </form>
+                </div>
+                
+                <div class="card" style="margin-top: 20px;">
+                    <h2>测试对话</h2>
+                    <div id="zib-ai-test-chat" style="border: 1px solid #ddd; padding: 15px; height: 300px; overflow-y: auto; background: #f9f9f9;">
+                        <div class="chat-message system">在这里测试 AI 对话功能...</div>
+                    </div>
+                    <div style="margin-top: 10px; display: flex; gap: 10px;">
+                        <input type="text" id="zib-ai-test-input" placeholder="输入测试问题..." 
+                               style="flex: 1; padding: 8px;" onkeypress="if(event.keyCode==13) zibTestAIChat()">
+                        <button type="button" class="button" onclick="zibTestAIChat()">发送</button>
+                    </div>
+                </div>
             </div>
             
             <!-- 右侧：知识库管理 -->
@@ -157,18 +182,6 @@ function zib_ai_admin_page() {
                     
                     <div id="zib-knowledge-list" style="margin-top: 20px;">
                         <!-- 知识库列表将通过 AJAX 加载 -->
-                    </div>
-                </div>
-                
-                <div class="card" style="margin-top: 20px;">
-                    <h2>测试对话</h2>
-                    <div id="zib-ai-test-chat" style="border: 1px solid #ddd; padding: 15px; height: 300px; overflow-y: auto; background: #f9f9f9;">
-                        <div class="chat-message system">在这里测试 AI 对话功能...</div>
-                    </div>
-                    <div style="margin-top: 10px; display: flex; gap: 10px;">
-                        <input type="text" id="zib-ai-test-input" placeholder="输入测试问题..." 
-                               style="flex: 1; padding: 8px;" onkeypress="if(event.keyCode==13) zibTestAIChat()">
-                        <button type="button" class="button" onclick="zibTestAIChat()">发送</button>
                     </div>
                 </div>
             </div>
@@ -382,6 +395,13 @@ function zib_ai_admin_page() {
     }
     </script>
     <?php
+}
+
+/**
+ * @deprecated 保留旧函数名以防兼容性问题
+ */
+function zib_ai_admin_page() {
+    zib_ai_knowledge_base_page();
 }
 
 /**
