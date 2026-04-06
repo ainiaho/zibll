@@ -1,1 +1,1 @@
-Nothing should be ignored based on the provided file changes. The only added file is PROJECT_README.md, which is a documentation file and should not be ignored.
+Nothing should be ignored based on the provided file changes. The modification of 'functions/ai-frontend.php' is a source code file and does not require any gitignore rules.
