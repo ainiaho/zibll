@@ -2600,6 +2600,68 @@ function optionsframework_options()
 		'desc' => __('显示订单数据', 'zib_language'),
 		'type' => 'checkbox'
 	);
+	
+	$options[] = array(
+		'name' => __('签到与充值设置', 'zib_language'),
+		'type' => 'heading'
+	);
+	
+	$options[] = array(
+		'id' => 'checkin_enabled',
+		'class' => 'mini-heading',
+		'name' => '签到功能',
+		'std' => true,
+		'desc' => __('开启每日签到领积分', 'zib_language'),
+		'type' => 'checkbox'
+	);
+	
+	$options[] = array(
+		'desc' => '签到最小积分',
+		'class' => 'op-multicheck mini',
+		'id' => 'checkin_min_points',
+		'std' => 10,
+		'settings' => array(
+			'max' => 1000,
+			'min' => 1,
+			'step' => 1,
+		),
+		'type' => 'number'
+	);
+	
+	$options[] = array(
+		'desc' => '签到最大积分',
+		'class' => 'op-multicheck mini',
+		'id' => 'checkin_max_points',
+		'std' => 50,
+		'settings' => array(
+			'max' => 1000,
+			'min' => 1,
+			'step' => 1,
+		),
+		'type' => 'number'
+	);
+	
+	$options[] = array(
+		'desc' => 'VIP 签到加成倍数（例如 1.2 表示 VIP 额外获得 20% 积分）',
+		'class' => 'op-multicheck mini',
+		'id' => 'checkin_vip_multiplier',
+		'std' => 1.2,
+		'settings' => array(
+			'max' => 5,
+			'min' => 1,
+			'step' => 0.1,
+		),
+		'type' => 'number'
+	);
+	
+	$options[] = array(
+		'id' => 'recharge_enabled',
+		'class' => 'mini-heading',
+		'name' => '充值功能',
+		'std' => true,
+		'desc' => __('开启会员充值积分', 'zib_language'),
+		'type' => 'checkbox'
+	);
 
 	$options[] = array(
 		'name' => __('收款接口选择', 'zib_language'),

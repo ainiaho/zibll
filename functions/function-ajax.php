@@ -148,3 +148,21 @@ function zib_ajax_kb_search() {
 }
 add_action('wp_ajax_kb_search', 'zib_ajax_kb_search');
 add_action('wp_ajax_nopriv_kb_search', 'zib_ajax_kb_search');
+
+/**
+ * 签到 AJAX 处理
+ */
+function zib_ajax_checkin() {
+    header('Content-type:application/json; Charset=utf-8');
+    
+    if (!is_user_logged_in()) {
+        echo json_encode(array('error' => 1, 'msg' => '请先登录'));
+        exit;
+    }
+    
+    $user_id = get_current_user_id();
+    require get_stylesheet_directory() . '/action/checkin.php';
+    exit;
+}
+add_action('wp_ajax_checkin', 'zib_ajax_checkin');
+add_action('wp_ajax_nopriv_checkin', 'zib_ajax_checkin');

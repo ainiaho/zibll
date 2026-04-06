@@ -20,3 +20,6 @@ require get_stylesheet_directory() . '/functions-theme.php';
 require get_stylesheet_directory() . '/functions/ai-core.php';
 require get_stylesheet_directory() . '/functions/ai-admin.php';
 require get_stylesheet_directory() . '/functions/ai-frontend.php';
+
+// 加载签到和会员充值功能模块
+require get_stylesheet_directory() . '/functions/zib-checkin.php';
