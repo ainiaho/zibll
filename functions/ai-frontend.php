@@ -75,7 +75,7 @@ function zib_ai_frontend_chatbox() {
     }
     </style>
     
-    <script>
+    <script type="text/javascript">
     jQuery(document).ready(function($) {
         // 从 localStorage 加载历史对话
         let history = localStorage.getItem('zib_ai_chat_history');

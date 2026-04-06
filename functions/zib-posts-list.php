@@ -266,17 +266,19 @@ function zib_posts_mini_list($args = array(), $new_query = false)
     if ($new_query) {
         while ($new_query->have_posts()) : $new_query->the_post();
             $number++;
-            zib_posts_mini_while($args, $number);
+            zib_posts_mini_while($number, $args);
         endwhile;
     } else {
+        $alt_number = 0;
         while (have_posts()) : the_post();
-            zib_posts_mini_while($args);
+            $alt_number++;
+            zib_posts_mini_while($alt_number, $args);
         endwhile;
     }
     wp_reset_query();
     wp_reset_postdata();
 }
-function zib_posts_mini_while($args = array(), $number)
+function zib_posts_mini_while($number, $args = array())
 {
     $defaults = array(
         'show_thumb' => true,
