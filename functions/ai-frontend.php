@@ -216,5 +216,3 @@ function zib_ai_add_theme_options($sections) {
 }
 // 如果主题支持选项扩展，则添加此过滤器
 // add_filter('zib_theme_options_sections', 'zib_ai_add_theme_options');
-
-?>
