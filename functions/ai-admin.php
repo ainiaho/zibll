@@ -13,19 +13,18 @@ if (!defined('ABSPATH')) {
  * 添加管理菜单
  */
 function zib_ai_add_admin_menu() {
-    // 获取正确的父菜单 slug
-    $parent_slug = 'framework_Zibll';
-    
-    add_submenu_page(
-        $parent_slug,
+    // 添加顶级菜单
+    add_menu_page(
         'AI 与知识库',
         'AI 与知识库',
         'manage_options',
         'zib-ai',
-        'zib_ai_admin_page'
+        'zib_ai_admin_page',
+        'dashicons-brain',
+        62
     );
 }
-add_action('admin_menu', 'zib_ai_add_admin_menu', 20);
+add_action('admin_menu', 'zib_ai_add_admin_menu');
 
 /**
  * 注册设置
