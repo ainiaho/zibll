@@ -235,8 +235,17 @@ class Zib_AI_Handler {
                 'Authorization' => 'Bearer ' . $api_key
             ),
             'body' => json_encode($body),
-            'timeout' => 30
+            'timeout' => 30,
+            'sslverify' => false
         );
+        
+        // 检查是否配置了代理
+        $proxy_enabled = _pz('ai_proxy_enabled', false);
+        $proxy_url = _pz('ai_proxy_url', '');
+        
+        if ($proxy_enabled && !empty($proxy_url)) {
+            $args['proxy'] = $proxy_url;
+        }
         
         $response = wp_remote_request($endpoint, $args);
         
@@ -247,7 +256,12 @@ class Zib_AI_Handler {
         $body = json_decode(wp_remote_retrieve_body($response), true);
         
         if (isset($body['error'])) {
-            return new WP_Error('api_error', $body['error']['message']);
+            $error_message = $body['error']['message'];
+            // 针对地区不支持的错误提供友好提示
+            if (strpos($error_message, 'Country, region, or territory not supported') !== false) {
+                return new WP_Error('region_not_supported', 'API 请求失败：当前地区不支持此服务。请在主题设置中配置代理服务器，或使用国内大模型服务。');
+            }
+            return new WP_Error('api_error', $error_message);
         }
         
         if (isset($body['choices'][0]['message']['content'])) {
