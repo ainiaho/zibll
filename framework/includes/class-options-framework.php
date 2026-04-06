@@ -57,6 +57,7 @@ class Options_Framework {
 	 * @return array (by reference)
 	 */
 	static function &_optionsframework_options() {
+		_deprecated_function( __METHOD__, '3.0', 'Return by reference is deprecated in PHP 8.1+' );
 		static $options = null;
 
 		if ( !$options ) {
