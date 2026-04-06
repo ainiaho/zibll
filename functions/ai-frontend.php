@@ -76,21 +76,7 @@ function zib_ai_frontend_chatbox() {
     </style>
     
     <script type="text/javascript">
-    jQuery(document).ready(function($) {
-        // 从 localStorage 加载历史对话
-        let history = localStorage.getItem('zib_ai_chat_history');
-        if (history) {
-            try {
-                let messages = JSON.parse(history);
-                messages.forEach(function(msg) {
-                    zibAppendMessage(msg.role, msg.content);
-                });
-            } catch(e) {
-                console.error('Failed to load chat history');
-            }
-        }
-    });
-    
+    // 全局函数定义
     function zibToggleChatbox() {
         let chatbox = document.getElementById('zib-ai-chatbox');
         if (chatbox.style.display === 'none') {
@@ -180,6 +166,21 @@ function zib_ai_frontend_chatbox() {
         
         localStorage.setItem('zib_ai_chat_history', JSON.stringify(history));
     }
+    
+    // 页面加载时从 localStorage 恢复历史对话
+    jQuery(document).ready(function($) {
+        let history = localStorage.getItem('zib_ai_chat_history');
+        if (history) {
+            try {
+                let messages = JSON.parse(history);
+                messages.forEach(function(msg) {
+                    zibAppendMessage(msg.role, msg.content);
+                });
+            } catch(e) {
+                console.error('Failed to load chat history');
+            }
+        }
+    });
     </script>
     <?php
 }
