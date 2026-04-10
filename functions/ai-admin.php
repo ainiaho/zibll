@@ -73,10 +73,16 @@ function zib_ai_knowledge_base_page() {
                             <tr>
                                 <th scope="row"><label for="ai_api_key">API 密钥</label></th>
                                 <td>
-                                    <input type="password" id="ai_api_key" name="ai_api_key" 
-                                           value="<?php echo esc_attr(get_option('ai_api_key')); ?>" 
-                                           class="regular-text" placeholder="sk-...">
+                                    <div style="display: flex; gap: 10px; align-items: center;">
+                                        <input type="password" id="ai_api_key" name="ai_api_key" 
+                                               value="<?php echo esc_attr(get_option('ai_api_key')); ?>" 
+                                               class="regular-text" placeholder="sk-..." style="flex: 1;">
+                                        <button type="button" class="button" id="test-api-key-btn" onclick="zibQuickTestAPIKey()">
+                                            🔍 测试连接
+                                        </button>
+                                    </div>
                                     <p class="description">输入您的 AI API 密钥（如 OpenAI、DeepSeek 等）</p>
+                                    <div id="api-key-test-result" style="display: none; margin-top: 10px; padding: 10px; border-radius: 3px; font-size: 13px;"></div>
                                 </td>
                             </tr>
                             
@@ -412,6 +418,62 @@ function zib_ai_knowledge_base_page() {
         });
     }
     
+    function zibQuickTestAPIKey() {
+        let apiKey = jQuery('#ai_api_key').val().trim();
+        let apiEndpoint = jQuery('#ai_api_endpoint').val().trim();
+        let model = jQuery('#ai_model').val().trim();
+        let proxyEnabled = jQuery('#ai_proxy_enabled').is(':checked');
+        let proxyUrl = jQuery('#ai_proxy_url').val().trim();
+        let resultDiv = jQuery('#api-key-test-result');
+        let btn = jQuery('#test-api-key-btn');
+        
+        if (!apiKey) {
+            resultDiv.show().html('<span style="color: #dc3232;">❌ 请先填写 API 密钥</span>');
+            return;
+        }
+        
+        resultDiv.show().html('<span style="color: #f0b849;">⏳ 正在测试连接...</span>');
+        btn.prop('disabled', true);
+        
+        jQuery.post(ajaxurl, {
+            action: 'zib_quick_test_api',
+            nonce: '<?php echo wp_create_nonce("zib_ai_nonce"); ?>',
+            api_key: apiKey,
+            api_endpoint: apiEndpoint,
+            model: model,
+            proxy_enabled: proxyEnabled ? 1 : 0,
+            proxy_url: proxyUrl
+        }, function(response) {
+            btn.prop('disabled', false);
+            
+            if (response.success) {
+                let data = response.data;
+                if (data.success) {
+                    resultDiv.html('<span style="color: #46b450;">✅ 连接成功！</span><br>' +
+                        '<small style="color: #666;">HTTP 状态码：' + data.http_code + 
+                        ' | 模型：' + data.model + 
+                        ' | 耗时：' + data.time + '秒</small><br>' +
+                        '<small style="color: #888;">回复：' + data.content.substring(0, 100) + (data.content.length > 100 ? '...' : '') + '</small>');
+                } else if (data.is_region_error) {
+                    resultDiv.html('<span style="color: #dc3232;">❌ 地区限制</span><br>' +
+                        '<small style="color: #666;">检测到地区不支持，请启用代理或更换国内 API 服务</small><br>' +
+                        '<small style="color: #888;">错误：' + data.error_message + '</small>');
+                } else {
+                    resultDiv.html('<span style="color: #dc3232;">❌ 测试失败</span><br>' +
+                        '<small style="color: #666;">HTTP 状态码：' + data.http_code + '</small><br>' +
+                        '<small style="color: #888;">错误：' + data.error_message + '</small>');
+                }
+            } else {
+                resultDiv.html('<span style="color: #dc3232;">❌ 请求失败</span><br>' +
+                    '<small style="color: #888;">' + response.data.message + '</small>');
+            }
+        }).fail(function(xhr, status, error) {
+            btn.prop('disabled', false);
+            resultDiv.html('<span style="color: #dc3232;">❌ AJAX 请求失败</span><br>' +
+                '<small style="color: #888;">状态：' + status + ' | 错误：' + error + '</small>');
+        });
+    }
+    
     function zibRunAIDiagnostic() {
         let resultDiv = jQuery('#zib-ai-diagnostic-result');
         let outputPre = jQuery('#zib-ai-diagnostic-output');
@@ -703,6 +765,112 @@ function zib_ai_run_diagnostic_ajax() {
     wp_send_json_success($result);
 }
 add_action('wp_ajax_zib_ai_run_diagnostic', 'zib_ai_run_diagnostic_ajax');
+
+/**
+ * AJAX: 快速测试 API 连接
+ */
+function zib_quick_test_api_ajax() {
+    check_ajax_referer('zib_ai_nonce', 'nonce');
+    
+    // 获取配置
+    $api_key = isset($_POST['api_key']) ? sanitize_text_field($_POST['api_key']) : get_option('ai_api_key', '');
+    $api_endpoint = isset($_POST['api_endpoint']) ? sanitize_text_field($_POST['api_endpoint']) : get_option('ai_api_endpoint', 'https://api.siliconflow.cn/v1/chat/completions');
+    $model = isset($_POST['model']) ? sanitize_text_field($_POST['model']) : get_option('ai_model', 'deepseek-ai/DeepSeek-V3');
+    $proxy_enabled = isset($_POST['proxy_enabled']) && $_POST['proxy_enabled'] == '1';
+    $proxy_url = isset($_POST['proxy_url']) ? sanitize_text_field($_POST['proxy_url']) : get_option('ai_proxy_url', '');
+    $system_prompt = get_option('ai_system_prompt', '你是一个有帮助的助手。');
+    
+    if (empty($api_key)) {
+        wp_send_json_error(array('message' => 'API Key 未设置'));
+        return;
+    }
+    
+    $start_time = microtime(true);
+    
+    // 构建请求
+    $request_body = json_encode(array(
+        'model' => $model,
+        'messages' => array(
+            array('role' => 'system', 'content' => $system_prompt),
+            array('role' => 'user', 'content' => '请简短回复：测试')
+        ),
+        'max_tokens' => 50,
+        'temperature' => 0.7
+    ));
+    
+    // 初始化 cURL
+    $ch = curl_init($api_endpoint);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $request_body);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        'Content-Type: application/json',
+        'Authorization: Bearer ' . $api_key
+    ));
+    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    
+    // 配置代理
+    if ($proxy_enabled && !empty($proxy_url)) {
+        curl_setopt($ch, CURLOPT_PROXY, $proxy_url);
+        curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+    }
+    
+    // 执行请求
+    $response = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curl_error = curl_error($ch);
+    $end_time = microtime(true);
+    $time_cost = round($end_time - $start_time, 2);
+    curl_close($ch);
+    
+    $result = array(
+        'http_code' => $http_code,
+        'time' => $time_cost,
+        'model' => $model,
+        'success' => false,
+        'is_region_error' => false,
+        'error_message' => '',
+        'content' => ''
+    );
+    
+    if ($response) {
+        $data = json_decode($response, true);
+        
+        // 检查是否为地区限制错误
+        $error_msg = '';
+        if (isset($data['error']) && isset($data['error']['message'])) {
+            $error_msg = $data['error']['message'];
+        } elseif (is_string($data) && strpos($data, 'not supported') !== false) {
+            $error_msg = $data;
+        }
+        
+        $region_keywords = array('not supported', 'Country', 'region', 'territory', '地区', '不支持');
+        $is_region_error = false;
+        foreach ($region_keywords as $keyword) {
+            if (stripos($error_msg, $keyword) !== false || stripos($response, $keyword) !== false) {
+                $is_region_error = true;
+                break;
+            }
+        }
+        
+        $result['is_region_error'] = $is_region_error;
+        
+        if ($http_code == 200 && isset($data['choices'][0]['message']['content'])) {
+            $result['success'] = true;
+            $result['content'] = $data['choices'][0]['message']['content'];
+        } else {
+            $result['error_message'] = $error_msg ?: ('HTTP ' . $http_code . ': ' . $curl_error);
+        }
+    } else {
+        $result['error_message'] = $curl_error;
+    }
+    
+    wp_send_json_success($result);
+}
+add_action('wp_ajax_zib_quick_test_api', 'zib_quick_test_api_ajax');
+// 允许未登录用户测试（如果前端需要）
+// add_action('wp_ajax_nopriv_zib_quick_test_api', 'zib_quick_test_api_ajax');
 
 /**
  * 获取知识库管理 HTML（用于嵌入到主题设置页面）
