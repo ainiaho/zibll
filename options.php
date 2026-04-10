@@ -3550,10 +3550,11 @@ function optionsframework_options()
 		'desc' => '开启后 AI 将结合知识库内容回答问题'
 	);
 
+	// 知识库管理界面（嵌入到主题设置中）
 	$options[] = array(
-		'id' => 'kb_description',
+		'id' => 'kb_management_interface',
 		'class' => 'op-multicheck',
-		'html' => '<div class="options-notice"><div class="explain"><p>知识库功能允许您创建专门的知识文章，AI 会自动检索相关知识来增强回答准确性。</p><p>启用后可在后台「知识库」菜单中管理知识文章。</p></div></div>',
+		'html' => zib_get_kb_management_html(),
 		'type' => "html"
 	);
 

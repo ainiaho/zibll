@@ -10,31 +10,32 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * 在主题设置的 AI 部分添加子菜单
+ * 注意：知识库管理已合并到主题设置的 AI 管理页面中
+ * 不再需要独立的子菜单项
  */
-function zib_ai_add_admin_submenu() {
-    // 获取主题框架的菜单 slug (framework_Zibll)
-    $name = '';
-    if (function_exists('framework_option_args') && isset(framework_option_args()['name'])) {
-        $name = framework_option_args()['name'];
-    }
-    if ('' == $name) {
-        $name = get_option('stylesheet');
-        $name = preg_replace("/\W/", "_", strtolower($name));
-    }
-    $parent_slug = 'framework_' . $name;
-    
-    // 添加为框架页面的子菜单
-    add_submenu_page(
-        $parent_slug,
-        '知识库管理',
-        '知识库管理',
-        'manage_options',
-        'zib-knowledge-base',
-        'zib_ai_knowledge_base_page'
-    );
-}
-add_action('admin_menu', 'zib_ai_add_admin_submenu', 20);
+// function zib_ai_add_admin_submenu() {
+//     // 获取主题框架的菜单 slug (framework_Zibll)
+//     $name = '';
+//     if (function_exists('framework_option_args') && isset(framework_option_args()['name'])) {
+//         $name = framework_option_args()['name'];
+//     }
+//     if ('' == $name) {
+//         $name = get_option('stylesheet');
+//         $name = preg_replace("/\W/", "_", strtolower($name));
+//     }
+//     $parent_slug = 'framework_' . $name;
+//     
+//     // 添加为框架页面的子菜单
+//     add_submenu_page(
+//         $parent_slug,
+//         '知识库管理',
+//         '知识库管理',
+//         'manage_options',
+//         'zib-knowledge-base',
+//         'zib_ai_knowledge_base_page'
+//     );
+// }
+// add_action('admin_menu', 'zib_ai_add_admin_submenu', 20);
 
 /**
  * 注册设置
@@ -702,3 +703,281 @@ function zib_ai_run_diagnostic_ajax() {
     wp_send_json_success($result);
 }
 add_action('wp_ajax_zib_ai_run_diagnostic', 'zib_ai_run_diagnostic_ajax');
+
+/**
+ * 获取知识库管理 HTML（用于嵌入到主题设置页面）
+ */
+function zib_get_kb_management_html() {
+    ob_start();
+    ?>
+    <div class="kb-management-container" style="margin-top: 20px;">
+        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+            <!-- 左侧：知识库管理 -->
+            <div style="flex: 1; min-width: 300px;">
+                <div style="border: 1px solid #ddd; padding: 20px; background: #fff; border-radius: 5px;">
+                    <h3 style="margin-top: 0;">📚 知识库管理</h3>
+                    <p style="color: #666; font-size: 13px;">管理用于 AI 回答的知识条目</p>
+                    
+                    <button type="button" class="button button-primary" onclick="zibOpenKnowledgeModal()" style="margin-bottom: 15px;">
+                        ➕ 添加知识条目
+                    </button>
+                    
+                    <div id="zib-knowledge-list" style="max-height: 400px; overflow-y: auto;">
+                        <!-- 知识库列表将通过 AJAX 加载 -->
+                        <div style="text-align: center; padding: 20px; color: #999;">加载中...</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 右侧：测试对话 -->
+            <div style="flex: 1; min-width: 300px;">
+                <div style="border: 1px solid #ddd; padding: 20px; background: #fff; border-radius: 5px;">
+                    <h3 style="margin-top: 0;">💬 测试对话</h3>
+                    <p style="color: #666; font-size: 13px;">测试 AI 结合知识库的回答效果</p>
+                    
+                    <div id="zib-ai-test-chat" style="border: 1px solid #eee; padding: 15px; height: 250px; overflow-y: auto; background: #f9f9f9; border-radius: 3px; margin-bottom: 10px;">
+                        <div class="chat-message system">在这里输入问题测试 AI 功能...</div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="zib-ai-test-input" placeholder="输入测试问题..." 
+                               style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 3px;" 
+                               onkeypress="if(event.keyCode==13) zibTestAIChat()">
+                        <button type="button" class="button" onclick="zibTestAIChat()">发送</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 添加/编辑知识条目模态框 -->
+        <div id="zib-knowledge-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100000;">
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; width: 600px; max-width: 90%; border-radius: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
+                <h3 id="knowledge-modal-title" style="margin-top: 0;">添加知识条目</h3>
+                <input type="hidden" id="knowledge-item-id" value="">
+                
+                <p>
+                    <label><strong>标题</strong></label><br>
+                    <input type="text" id="knowledge-title" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 3px; box-sizing: border-box;">
+                </p>
+                
+                <p>
+                    <label><strong>分类</strong></label><br>
+                    <input type="text" id="knowledge-category" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 3px; box-sizing: border-box;" placeholder="例如：常见问题、产品说明">
+                </p>
+                
+                <p>
+                    <label><strong>标签</strong>（逗号分隔）</label><br>
+                    <input type="text" id="knowledge-tags" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 3px; box-sizing: border-box;" placeholder="关键词 1, 关键词 2">
+                </p>
+                
+                <p>
+                    <label><strong>内容</strong></label><br>
+                    <textarea id="knowledge-content" rows="8" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 3px; box-sizing: border-box;"></textarea>
+                </p>
+                
+                <p>
+                    <label><strong>状态</strong></label><br>
+                    <select id="knowledge-status" style="padding: 8px; border: 1px solid #ddd; border-radius: 3px;">
+                        <option value="publish">发布</option>
+                        <option value="draft">草稿</option>
+                    </select>
+                </p>
+                
+                <div style="text-align: right; margin-top: 20px;">
+                    <button type="button" class="button" onclick="zibCloseKnowledgeModal()">取消</button>
+                    <button type="button" class="button button-primary" onclick="zibSaveKnowledge()">保存</button>
+                </div>
+            </div>
+        </div>
+        
+        <style>
+            .chat-message {
+                margin: 10px 0;
+                padding: 10px;
+                border-radius: 5px;
+            }
+            .chat-message.user {
+                background: #e3f2fd;
+                margin-left: 20%;
+            }
+            .chat-message.assistant {
+                background: #f5f5f5;
+                margin-right: 20%;
+            }
+            .chat-message.system {
+                color: #666;
+                font-style: italic;
+            }
+            #zib-knowledge-list .knowledge-item {
+                border: 1px solid #ddd;
+                padding: 15px;
+                margin-bottom: 10px;
+                background: white;
+                border-radius: 3px;
+            }
+            #zib-knowledge-list .knowledge-item h4 {
+                margin: 0 0 10px 0;
+                color: #333;
+            }
+            #zib-knowledge-list .knowledge-meta {
+                font-size: 12px;
+                color: #666;
+                margin-bottom: 10px;
+            }
+            #zib-knowledge-list .knowledge-item .button {
+                margin-right: 5px;
+            }
+        </style>
+        
+        <script>
+        jQuery(document).ready(function($) {
+            // 加载知识库列表
+            zibLoadKnowledgeList();
+        });
+        
+        function zibLoadKnowledgeList() {
+            jQuery.post(ajaxurl, {
+                action: 'zib_ai_get_knowledge_list',
+                nonce: '<?php echo wp_create_nonce("zib_ai_nonce"); ?>'
+            }, function(response) {
+                if (response.success) {
+                    let html = '';
+                    if (response.data.length === 0) {
+                        html = '<p style="text-align: center; color: #999; padding: 20px;">暂无知识条目，点击上方按钮添加</p>';
+                    } else {
+                        response.data.forEach(function(item) {
+                            html += '<div class="knowledge-item">';
+                            html += '<h4>' + item.title + '</h4>';
+                            html += '<div class="knowledge-meta">分类：' + (item.category || '未分类') + ' | 标签：' + (item.tags || '无') + '</div>';
+                            html += '<div style="margin-top: 10px;">';
+                            html += '<button class="button" onclick="zibEditKnowledge(' + item.id + ')">编辑</button> ';
+                            html += '<button class="button" onclick="zibDeleteKnowledge(' + item.id + ')">删除</button>';
+                            html += '</div></div>';
+                        });
+                    }
+                    jQuery('#zib-knowledge-list').html(html);
+                } else {
+                    jQuery('#zib-knowledge-list').html('<p style="color: red;">加载失败，请刷新页面重试</p>');
+                }
+            });
+        }
+        
+        function zibOpenKnowledgeModal(id = null) {
+            jQuery('#knowledge-modal-title').text(id ? '编辑知识条目' : '添加知识条目');
+            jQuery('#knowledge-item-id').val(id || '');
+            
+            if (id) {
+                jQuery.post(ajaxurl, {
+                    action: 'zib_ai_get_knowledge_item',
+                    id: id,
+                    nonce: '<?php echo wp_create_nonce("zib_ai_nonce"); ?>'
+                }, function(response) {
+                    if (response.success) {
+                        let item = response.data;
+                        jQuery('#knowledge-title').val(item.title);
+                        jQuery('#knowledge-category').val(item.category);
+                        jQuery('#knowledge-tags').val(item.tags);
+                        jQuery('#knowledge-content').val(item.content);
+                        jQuery('#knowledge-status').val(item.status);
+                    }
+                });
+            } else {
+                jQuery('#knowledge-title').val('');
+                jQuery('#knowledge-category').val('');
+                jQuery('#knowledge-tags').val('');
+                jQuery('#knowledge-content').val('');
+                jQuery('#knowledge-status').val('publish');
+            }
+            
+            jQuery('#zib-knowledge-modal').show();
+        }
+        
+        function zibCloseKnowledgeModal() {
+            jQuery('#zib-knowledge-modal').hide();
+        }
+        
+        function zibSaveKnowledge() {
+            let id = jQuery('#knowledge-item-id').val();
+            let data = {
+                action: id ? 'zib_ai_update_knowledge' : 'zib_ai_add_knowledge',
+                nonce: '<?php echo wp_create_nonce("zib_ai_nonce"); ?>',
+                title: jQuery('#knowledge-title').val(),
+                category: jQuery('#knowledge-category').val(),
+                tags: jQuery('#knowledge-tags').val(),
+                content: jQuery('#knowledge-content').val(),
+                status: jQuery('#knowledge-status').val()
+            };
+            
+            if (id) {
+                data.id = id;
+            }
+            
+            jQuery.post(ajaxurl, data, function(response) {
+                if (response.success) {
+                    alert('保存成功！');
+                    zibCloseKnowledgeModal();
+                    zibLoadKnowledgeList();
+                } else {
+                    alert('保存失败：' + (response.data || '未知错误'));
+                }
+            });
+        }
+        
+        function zibEditKnowledge(id) {
+            zibOpenKnowledgeModal(id);
+        }
+        
+        function zibDeleteKnowledge(id) {
+            if (confirm('确定要删除这个知识条目吗？')) {
+                jQuery.post(ajaxurl, {
+                    action: 'zib_ai_delete_knowledge',
+                    id: id,
+                    nonce: '<?php echo wp_create_nonce("zib_ai_nonce"); ?>'
+                }, function(response) {
+                    if (response.success) {
+                        alert('删除成功！');
+                        zibLoadKnowledgeList();
+                    } else {
+                        alert('删除失败：' + (response.data || '未知错误'));
+                    }
+                });
+            }
+        }
+        
+        function zibTestAIChat() {
+            let input = jQuery('#zib-ai-test-input');
+            let message = input.val().trim();
+            if (!message) return;
+            
+            // 添加用户消息
+            jQuery('#zib-ai-test-chat').append('<div class="chat-message user">' + message + '</div>');
+            input.val('');
+            
+            // 滚动到底部
+            let chatBox = document.getElementById('zib-ai-test-chat');
+            chatBox.scrollTop = chatBox.scrollHeight;
+            
+            // 显示加载中
+            jQuery('#zib-ai-test-chat').append('<div class="chat-message system" id="chat-loading">AI 正在思考...</div>');
+            chatBox.scrollTop = chatBox.scrollHeight;
+            
+            // 发送请求
+            jQuery.post(ajaxurl, {
+                action: 'zib_ai_chat',
+                message: message,
+                nonce: '<?php echo wp_create_nonce("zib_ai_nonce"); ?>'
+            }, function(response) {
+                jQuery('#chat-loading').remove();
+                
+                if (response.success) {
+                    jQuery('#zib-ai-test-chat').append('<div class="chat-message assistant">' + response.data + '</div>');
+                } else {
+                    jQuery('#zib-ai-test-chat').append('<div class="chat-message system" style="color: red;">错误：' + (response.data || '请求失败') + '</div>');
+                }
+                chatBox.scrollTop = chatBox.scrollHeight;
+            });
+        }
+        </script>
+    </div>
+    <?php
+    return ob_get_clean();
+}
