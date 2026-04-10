@@ -340,12 +340,19 @@ function zib_ai_chat_ajax() {
     
     if (empty($message)) {
         wp_send_json_error(array('message' => '请输入问题'));
+        return;
     }
     
     $result = Zib_AI_Handler::process_query($message, $history);
     
     if (is_wp_error($result)) {
         wp_send_json_error(array('message' => $result->get_error_message()));
+        return;
+    }
+    
+    if (!isset($result['content'])) {
+        wp_send_json_error(array('message' => 'API 返回数据格式错误'));
+        return;
     }
     
     wp_send_json_success(array(
