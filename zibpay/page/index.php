@@ -44,8 +44,10 @@ $ssmonth_price = $ssmonth_price ? $ssmonth_price : 0;
 
 $obj = array();
 $time_vat = '';
+$count_val_0 = '';
 $count_val_1 = '';
 $count_val_2 = '';
+$price_val_0 = array();
 $price_val_1 = array();
 $price_val_2 = array();
 for ($x = 16; $x >= 0; $x--) {
@@ -61,7 +63,7 @@ for ($x = 16; $x >= 0; $x--) {
     $count_val_1 .= $fenge . $wpdb->get_var("SELECT COUNT(id) FROM $wpdb->zibpay_order WHERE pay_time LIKE '%$time%' and order_type=1");
     $count_val_2 .= $fenge . $wpdb->get_var("SELECT COUNT(id) FROM $wpdb->zibpay_order WHERE pay_time LIKE '%$time%' and order_type=2");
     $price_val_0[] = @round($wpdb->get_var("SELECT SUM(pay_price) FROM $wpdb->zibpay_order WHERE pay_time LIKE '%$time%'"), 2);
-    $price_val_2[] = @round($wpdb->get_var("SELECT SUM(pay_price) FROM $wpdb->zibpay_order WHERE pay_time LIKE '%$time%' and order_type=1"), 2);
+    $price_val_1[] = @round($wpdb->get_var("SELECT SUM(pay_price) FROM $wpdb->zibpay_order WHERE pay_time LIKE '%$time%' and order_type=1"), 2);
     $price_val_2[] = @round($wpdb->get_var("SELECT SUM(pay_price) FROM $wpdb->zibpay_order WHERE pay_time LIKE '%$time%' and order_type=2"), 2);
 }
 
@@ -82,7 +84,13 @@ $price_val_2 = json_encode($price_val_2);
 
             <span class="count_top">今日订单</span>
             <div class="count"><?php echo $today_order ?></div>
-            <span class="count_bottom">同比昨日：<?php echo @round((($today_order - $Yesterday_order) / $Yesterday_order * 100), 1) . '%' ?></span>
+            <span class="count_bottom">同比昨日：<?php 
+                $yesterday_ratio = 0;
+                if ($Yesterday_order > 0) {
+                    $yesterday_ratio = round((($today_order - $Yesterday_order) / $Yesterday_order * 100), 1);
+                }
+                echo $yesterday_ratio . '%'; 
+            ?></span>
 
         </div>
     </div>
@@ -91,7 +99,13 @@ $price_val_2 = json_encode($price_val_2);
 
             <span class="count_top">今日收款</span>
             <div class="count"><?php echo $today_price ?></div>
-            <span class="count_bottom">同比昨日：<?php echo @round((($today_price - $Yesterday_price) / $Yesterday_price * 100), 1) . '%' ?></span>
+            <span class="count_bottom">同比昨日：<?php 
+                $yesterday_price_ratio = 0;
+                if ($Yesterday_price > 0) {
+                    $yesterday_price_ratio = round((($today_price - $Yesterday_price) / $Yesterday_price * 100), 1);
+                }
+                echo $yesterday_price_ratio . '%'; 
+            ?></span>
 
 
         </div>
@@ -100,7 +114,13 @@ $price_val_2 = json_encode($price_val_2);
         <div class="box-panel">
             <span class="count_top">本月订单</span>
             <div class="count"><?php echo $tomonth_order ?></div>
-            <span class="count_bottom">同比昨日：<?php echo @round((($tomonth_order - $ssmonth_order) / $ssmonth_order * 100), 1) . '%' ?></span>
+            <span class="count_bottom">同比上月：<?php 
+                $month_order_ratio = 0;
+                if ($ssmonth_order > 0) {
+                    $month_order_ratio = round((($tomonth_order - $ssmonth_order) / $ssmonth_order * 100), 1);
+                }
+                echo $month_order_ratio . '%'; 
+            ?></span>
 
 
 
@@ -111,7 +131,13 @@ $price_val_2 = json_encode($price_val_2);
 
             <span class="count_top">本月收款</span>
             <div class="count"><?php echo $tomonth_price ?></div>
-            <span class="count_bottom">同比昨日：<?php echo @round((($tomonth_price - $ssmonth_price) / $ssmonth_price * 100), 1) . '%' ?></span>
+            <span class="count_bottom">同比上月：<?php 
+                $month_price_ratio = 0;
+                if ($ssmonth_price > 0) {
+                    $month_price_ratio = round((($tomonth_price - $ssmonth_price) / $ssmonth_price * 100), 1);
+                }
+                echo $month_price_ratio . '%'; 
+            ?></span>
 
 
         </div>
