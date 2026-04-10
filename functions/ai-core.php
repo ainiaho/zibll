@@ -232,11 +232,13 @@ class Zib_AI_Handler {
             'method' => 'POST',
             'headers' => array(
                 'Content-Type' => 'application/json',
-                'Authorization' => 'Bearer ' . $api_key
+                'Authorization' => 'Bearer ' . $api_key,
+                'User-Agent' => 'WordPress/' . get_bloginfo('version')
             ),
             'body' => json_encode($body),
-            'timeout' => 30,
-            'sslverify' => false
+            'timeout' => 60,
+            'sslverify' => false,
+            'httpversion' => '1.1'
         );
         
         // 检查是否配置了代理
@@ -245,6 +247,15 @@ class Zib_AI_Handler {
         
         if ($proxy_enabled && !empty($proxy_url)) {
             $args['proxy'] = $proxy_url;
+            // 如果代理启用了 SSL 验证，关闭它
+            if (strpos($proxy_url, 'https') === 0) {
+                $args['sslverify'] = false;
+            }
+        }
+        
+        // 添加代理头信息（某些代理需要）
+        if (!empty($proxy_url)) {
+            $args['headers']['X-Forwarded-For'] = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
         }
         
         $response = wp_remote_request($endpoint, $args);
@@ -255,10 +266,19 @@ class Zib_AI_Handler {
         
         $body = json_decode(wp_remote_retrieve_body($response), true);
         
+        // 调试：记录原始响应（仅用于开发环境）
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            error_log('AI API Response: ' . print_r($body, true));
+        }
+        
         if (isset($body['error'])) {
-            $error_message = $body['error']['message'];
+            $error_message = $body['error']['message'] ?? '未知错误';
+            $error_code = $body['error']['code'] ?? '';
+            
             // 针对地区不支持的错误提供友好提示
-            if (strpos($error_message, 'Country, region, or territory not supported') !== false) {
+            if (strpos($error_message, 'Country, region, or territory not supported') !== false 
+                || strpos($error_code, 'region') !== false
+                || strpos($error_message, 'not supported') !== false) {
                 return new WP_Error('region_not_supported', 'API 请求失败：当前地区不支持此服务。请在主题设置中配置代理服务器，或使用国内大模型服务。');
             }
             return new WP_Error('api_error', $error_message);
