@@ -108,7 +108,7 @@ jQuery(function($) {
                 url: aiConfig.ajaxUrl,
                 type: 'POST',
                 data: {
-                    action: 'ai_chat',
+                    action: 'zib_ai_chat',
                     nonce: aiConfig.nonce,
                     message: message,
                     history: JSON.stringify(history)
