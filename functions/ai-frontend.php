@@ -160,12 +160,37 @@ function zib_ai_frontend_chatbox() {
                 zibAppendMessage('assistant', response.data.content);
                 zibSaveChatHistory('assistant', response.data.content);
             } else {
-                zibAppendMessage('assistant', '抱歉，出现错误：' + response.data.message);
+                // 修复错误显示：处理 object 对象的情况
+                let errorMsg = '抱歉，出现未知错误';
+                if (response.data) {
+                    if (typeof response.data === 'string') {
+                        errorMsg = response.data;
+                    } else if (typeof response.data.message === 'string') {
+                        errorMsg = response.data.message;
+                    } else if (typeof response.data === 'object') {
+                        try {
+                            errorMsg = JSON.stringify(response.data);
+                        } catch(e) {
+                            errorMsg = '抱歉，出现错误：[object Object]';
+                        }
+                    }
+                }
+                zibAppendMessage('assistant', '抱歉，出现错误：' + errorMsg);
             }
             
             // 滚动到底部
             let chatMessages = document.getElementById('zib-ai-chat-messages');
             chatMessages.scrollTop = chatMessages.scrollHeight;
+        }).fail(function(xhr, status, error) {
+            // 处理 AJAX 请求失败的情况
+            document.getElementById(loadingId).remove();
+            let errorMsg = '网络请求失败';
+            if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message) {
+                errorMsg = xhr.responseJSON.data.message;
+            } else if (xhr.responseText) {
+                errorMsg = xhr.responseText;
+            }
+            zibAppendMessage('assistant', '抱歉，出现错误：' + errorMsg);
         });
     }
     
