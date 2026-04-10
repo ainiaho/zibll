@@ -409,11 +409,28 @@ function zib_ai_knowledge_base_page() {
             message: message,
             history: '[]'
         }, function(response) {
-            if (response.success) {
+            if (response.success && response.data && response.data.content) {
                 chatBox.append('<div class="chat-message assistant">' + response.data.content + '</div>');
             } else {
-                chatBox.append('<div class="chat-message assistant" style="color: red;">错误：' + response.data.message + '</div>');
+                let errorMsg = '未知错误';
+                if (response.data && response.data.message) {
+                    errorMsg = response.data.message;
+                } else if (typeof response === 'string') {
+                    errorMsg = response;
+                } else if (response.data) {
+                    errorMsg = JSON.stringify(response.data);
+                }
+                chatBox.append('<div class="chat-message assistant" style="color: red;">错误：' + errorMsg + '</div>');
             }
+            chatBox.scrollTop(chatBox[0].scrollHeight);
+        }).fail(function(xhr, status, error) {
+            let errorMsg = '请求失败：' + status;
+            if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message) {
+                errorMsg = xhr.responseJSON.data.message;
+            } else if (error) {
+                errorMsg = error;
+            }
+            chatBox.append('<div class="chat-message assistant" style="color: red;">错误：' + errorMsg + '</div>');
             chatBox.scrollTop(chatBox[0].scrollHeight);
         });
     }
@@ -1132,11 +1149,29 @@ function zib_get_kb_management_html() {
             }, function(response) {
                 jQuery('#chat-loading').remove();
                 
-                if (response.success) {
-                    jQuery('#zib-ai-test-chat').append('<div class="chat-message assistant">' + response.data + '</div>');
+                if (response.success && response.data && response.data.content) {
+                    jQuery('#zib-ai-test-chat').append('<div class="chat-message assistant">' + response.data.content + '</div>');
                 } else {
-                    jQuery('#zib-ai-test-chat').append('<div class="chat-message system" style="color: red;">错误：' + (response.data || '请求失败') + '</div>');
+                    let errorMsg = '未知错误';
+                    if (response.data && response.data.message) {
+                        errorMsg = response.data.message;
+                    } else if (typeof response === 'string') {
+                        errorMsg = response;
+                    } else if (response.data) {
+                        errorMsg = JSON.stringify(response.data);
+                    }
+                    jQuery('#zib-ai-test-chat').append('<div class="chat-message system" style="color: red;">错误：' + errorMsg + '</div>');
                 }
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }).fail(function(xhr, status, error) {
+                jQuery('#chat-loading').remove();
+                let errorMsg = '请求失败：' + status;
+                if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message) {
+                    errorMsg = xhr.responseJSON.data.message;
+                } else if (error) {
+                    errorMsg = error;
+                }
+                jQuery('#zib-ai-test-chat').append('<div class="chat-message system" style="color: red;">错误：' + errorMsg + '</div>');
                 chatBox.scrollTop = chatBox.scrollHeight;
             });
         }
