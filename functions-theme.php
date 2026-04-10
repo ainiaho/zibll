@@ -22,6 +22,7 @@ require_once(get_theme_file_path('/vendor/autoload.php'));
 require_once(get_theme_file_path('/oauth/oauth.php'));
 require_once(get_theme_file_path('/zibpay/functions.php'));
 require_once(get_theme_file_path('/functions/zib-ai.php'));
+require_once(get_theme_file_path('/functions/test-ai-debug.php')); // AI 诊断工具
 
 if (is_admin()) {
 	require_once(get_theme_file_path('/functions-admin.php'));
