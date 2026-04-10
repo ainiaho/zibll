@@ -710,40 +710,36 @@ add_action('wp_ajax_zib_ai_run_diagnostic', 'zib_ai_run_diagnostic_ajax');
 function zib_get_kb_management_html() {
     ob_start();
     ?>
-    <div class="kb-management-container" style="margin-top: 20px;">
+    <div class="kb-management-container" style="margin-top: 15px;">
         <div style="display: flex; gap: 20px; flex-wrap: wrap;">
             <!-- 左侧：知识库管理 -->
             <div style="flex: 1; min-width: 300px;">
-                <div style="border: 1px solid #ddd; padding: 20px; background: #fff; border-radius: 5px;">
-                    <h3 style="margin-top: 0;">📚 知识库管理</h3>
-                    <p style="color: #666; font-size: 13px;">管理用于 AI 回答的知识条目</p>
-                    
-                    <button type="button" class="button button-primary" onclick="zibOpenKnowledgeModal()" style="margin-bottom: 15px;">
-                        ➕ 添加知识条目
-                    </button>
-                    
-                    <div id="zib-knowledge-list" style="max-height: 400px; overflow-y: auto;">
-                        <!-- 知识库列表将通过 AJAX 加载 -->
-                        <div style="text-align: center; padding: 20px; color: #999;">加载中...</div>
-                    </div>
+                <h3 style="margin-top: 0; margin-bottom: 15px; font-size: 16px; color: #333;">📚 知识库管理</h3>
+                <p style="color: #666; font-size: 13px; margin-bottom: 15px;">管理用于 AI 回答的知识条目</p>
+                
+                <button type="button" class="button button-primary" onclick="zibOpenKnowledgeModal()" style="margin-bottom: 15px;">
+                    ➕ 添加知识条目
+                </button>
+                
+                <div id="zib-knowledge-list" style="max-height: 400px; overflow-y: auto;">
+                    <!-- 知识库列表将通过 AJAX 加载 -->
+                    <div style="text-align: center; padding: 20px; color: #999;">加载中...</div>
                 </div>
             </div>
             
             <!-- 右侧：测试对话 -->
             <div style="flex: 1; min-width: 300px;">
-                <div style="border: 1px solid #ddd; padding: 20px; background: #fff; border-radius: 5px;">
-                    <h3 style="margin-top: 0;">💬 测试对话</h3>
-                    <p style="color: #666; font-size: 13px;">测试 AI 结合知识库的回答效果</p>
-                    
-                    <div id="zib-ai-test-chat" style="border: 1px solid #eee; padding: 15px; height: 250px; overflow-y: auto; background: #f9f9f9; border-radius: 3px; margin-bottom: 10px;">
-                        <div class="chat-message system">在这里输入问题测试 AI 功能...</div>
-                    </div>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="text" id="zib-ai-test-input" placeholder="输入测试问题..." 
-                               style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 3px;" 
-                               onkeypress="if(event.keyCode==13) zibTestAIChat()">
-                        <button type="button" class="button" onclick="zibTestAIChat()">发送</button>
-                    </div>
+                <h3 style="margin-top: 0; margin-bottom: 15px; font-size: 16px; color: #333;">💬 测试对话</h3>
+                <p style="color: #666; font-size: 13px; margin-bottom: 15px;">测试 AI 结合知识库的回答效果</p>
+                
+                <div id="zib-ai-test-chat" style="border: 1px solid #ddd; padding: 15px; height: 250px; overflow-y: auto; background: #f9f9f9; border-radius: 3px; margin-bottom: 10px;">
+                    <div class="chat-message system">在这里输入问题测试 AI 功能...</div>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="zib-ai-test-input" placeholder="输入测试问题..." 
+                           style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 3px;" 
+                           onkeypress="if(event.keyCode==13) zibTestAIChat()">
+                    <button type="button" class="button" onclick="zibTestAIChat()">发送</button>
                 </div>
             </div>
         </div>
