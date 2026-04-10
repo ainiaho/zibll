@@ -157,6 +157,23 @@ function zib_ai_knowledge_base_page() {
                     </form>
                 </div>
                 
+                <!-- AI 连接诊断工具 (硅基流动专用) -->
+                <div class="card" style="margin-top: 20px; border-left: 4px solid #dc3232;">
+                    <h2 style="color: #dc3232;">🔍 实时连接诊断 (硅基流动专用)</h2>
+                    <p>直接测试与硅基流动 API 的连接，绕过前端 AJAX 限制，快速定位问题。</p>
+                    
+                    <div id="zib-ai-diagnostic-result" style="display: none; margin-top: 15px; padding: 15px; background: #f9f9f9; border: 1px solid #ddd;">
+                        <pre id="zib-ai-diagnostic-output" style="white-space: pre-wrap; word-wrap: break-word; font-size: 12px;"></pre>
+                    </div>
+                    
+                    <button type="button" class="button button-primary" onclick="zibRunAIDiagnostic()" style="margin-top: 10px;">
+                        🚀 开始诊断
+                    </button>
+                    <p class="description" style="margin-top: 10px;">
+                        <strong>注意：</strong>此工具将使用当前保存的配置直接向 API 发送请求。如显示"地区不支持"，请配置上方的代理服务器或使用国内大模型服务。
+                    </p>
+                </div>
+                
                 <div class="card" style="margin-top: 20px;">
                     <h2>测试对话</h2>
                     <div id="zib-ai-test-chat" style="border: 1px solid #ddd; padding: 15px; height: 300px; overflow-y: auto; background: #f9f9f9;">
@@ -393,6 +410,64 @@ function zib_ai_knowledge_base_page() {
             chatBox.scrollTop(chatBox[0].scrollHeight);
         });
     }
+    
+    function zibRunAIDiagnostic() {
+        let resultDiv = jQuery('#zib-ai-diagnostic-result');
+        let outputPre = jQuery('#zib-ai-diagnostic-output');
+        let btn = jQuery('button[onclick="zibRunAIDiagnostic()"]');
+        
+        resultDiv.show();
+        btn.prop('disabled', true).text('⏳ 诊断中...');
+        outputPre.text('正在发送请求到硅基流动 API，请稍候...\n');
+        
+        jQuery.post(ajaxurl, {
+            action: 'zib_ai_run_diagnostic',
+            nonce: '<?php echo wp_create_nonce("zib_ai_nonce"); ?>'
+        }, function(response) {
+            btn.prop('disabled', false).text('🚀 开始诊断');
+            
+            if (response.success) {
+                let data = response.data;
+                let output = '✅ 诊断完成\n\n';
+                output += '━━━━━━━━━━━━━━━━━━━━━━\n';
+                output += '【配置信息】\n';
+                output += 'API 端点：' + data.config.endpoint + '\n';
+                output += '模型名称：' + data.config.model + '\n';
+                output += '代理状态：' + (data.config.proxy_enabled ? '已启用 (' + data.config.proxy_url + ')' : '未启用') + '\n';
+                output += 'API Key: ' + (data.config.api_key ? data.config.api_key.substring(0, 8) + '...' : '未设置') + '\n\n';
+                
+                output += '━━━━━━━━━━━━━━━━━━━━━━\n';
+                output += '【HTTP 状态码】: ' + data.http_code + '\n\n';
+                
+                if (data.is_region_error) {
+                    output += '❌ 检测到地区限制错误！\n';
+                    output += '错误信息：' + data.error_message + '\n\n';
+                    output += '💡 解决方案:\n';
+                    output += '1. 在上方\"启用代理服务器\"选项中配置代理地址\n';
+                    output += '2. 或使用国内大模型服务（如 DeepSeek、通义千问等）\n';
+                } else if (data.success) {
+                    output += '✅ 连接成功！API 返回正常。\n\n';
+                    output += '【AI 回复预览】\n';
+                    output += data.response_content.substring(0, 500) + (data.response_content.length > 500 ? '...' : '') + '\n';
+                } else {
+                    output += '❌ 请求失败\n';
+                    output += '错误类型：' + data.error_type + '\n';
+                    output += '错误信息：' + data.error_message + '\n';
+                }
+                
+                output += '\n━━━━━━━━━━━━━━━━━━━━━━\n';
+                output += '【完整响应内容】\n';
+                output += data.raw_response;
+                
+                outputPre.text(output);
+            } else {
+                outputPre.text('❌ 诊断失败：' + response.data.message);
+            }
+        }).fail(function(xhr, status, error) {
+            btn.prop('disabled', false).text('🚀 开始诊断');
+            outputPre.text('❌ AJAX 请求失败\n状态：' + status + '\n错误：' + error);
+        });
+    }
     </script>
     <?php
 }
@@ -516,3 +591,114 @@ function zib_ai_delete_knowledge_ajax() {
     wp_send_json_success();
 }
 add_action('wp_ajax_zib_ai_delete_knowledge', 'zib_ai_delete_knowledge_ajax');
+
+/**
+ * AJAX: 运行 AI 诊断测试
+ */
+function zib_ai_run_diagnostic_ajax() {
+    check_ajax_referer('zib_ai_nonce', 'nonce');
+    
+    // 获取配置
+    $api_key = get_option('ai_api_key', '');
+    $api_endpoint = get_option('ai_api_endpoint', 'https://api.siliconflow.cn/v1/chat/completions');
+    $model = get_option('ai_model', 'deepseek-ai/DeepSeek-V3');
+    $proxy_enabled = get_option('ai_proxy_enabled', false);
+    $proxy_url = get_option('ai_proxy_url', '');
+    $system_prompt = get_option('ai_system_prompt', '你是一个有帮助的助手。');
+    
+    $config = array(
+        'api_key' => $api_key,
+        'endpoint' => $api_endpoint,
+        'model' => $model,
+        'proxy_enabled' => $proxy_enabled,
+        'proxy_url' => $proxy_url
+    );
+    
+    if (empty($api_key)) {
+        wp_send_json_error(array('message' => 'API Key 未设置，请在上方配置中填写'));
+        return;
+    }
+    
+    // 构建请求
+    $request_body = json_encode(array(
+        'model' => $model,
+        'messages' => array(
+            array('role' => 'system', 'content' => $system_prompt),
+            array('role' => 'user', 'content' => '请用一句话回复：测试连接是否正常？')
+        ),
+        'max_tokens' => 50,
+        'temperature' => 0.7
+    ));
+    
+    // 初始化 cURL
+    $ch = curl_init($api_endpoint);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $request_body);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        'Content-Type: application/json',
+        'Authorization: Bearer ' . $api_key
+    ));
+    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    
+    // 配置代理
+    if ($proxy_enabled && !empty($proxy_url)) {
+        curl_setopt($ch, CURLOPT_PROXY, $proxy_url);
+        curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+    }
+    
+    // 执行请求
+    $response = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curl_error = curl_error($ch);
+    curl_close($ch);
+    
+    $result = array(
+        'config' => $config,
+        'http_code' => $http_code,
+        'raw_response' => $response ? $response : ('cURL Error: ' . $curl_error),
+        'success' => false,
+        'is_region_error' => false,
+        'error_type' => '',
+        'error_message' => '',
+        'response_content' => ''
+    );
+    
+    if ($response) {
+        $data = json_decode($response, true);
+        
+        // 检查是否为地区限制错误
+        $error_msg = '';
+        if (isset($data['error']) && isset($data['error']['message'])) {
+            $error_msg = $data['error']['message'];
+        } elseif (is_string($data) && strpos($data, 'not supported') !== false) {
+            $error_msg = $data;
+        }
+        
+        $region_keywords = array('not supported', 'Country', 'region', 'territory', '地区', '不支持');
+        $is_region_error = false;
+        foreach ($region_keywords as $keyword) {
+            if (stripos($error_msg, $keyword) !== false || stripos($response, $keyword) !== false) {
+                $is_region_error = true;
+                break;
+            }
+        }
+        
+        $result['is_region_error'] = $is_region_error;
+        
+        if ($http_code == 200 && isset($data['choices'][0]['message']['content'])) {
+            $result['success'] = true;
+            $result['response_content'] = $data['choices'][0]['message']['content'];
+        } else {
+            $result['error_type'] = 'API Error';
+            $result['error_message'] = $error_msg ?: ('HTTP ' . $http_code . ': ' . $curl_error);
+        }
+    } else {
+        $result['error_type'] = 'Network Error';
+        $result['error_message'] = $curl_error;
+    }
+    
+    wp_send_json_success($result);
+}
+add_action('wp_ajax_zib_ai_run_diagnostic', 'zib_ai_run_diagnostic_ajax');

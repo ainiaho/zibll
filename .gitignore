@@ -1,1 +1,1 @@
-Nothing should be ignored based on the provided file changes. The changes only include PHP source files (.php) which are legitimate source code files that should be tracked in version control. No build artifacts, dependencies, temporary files, or other ignorable content is present in the change list.
+Nothing should be ignored based on the provided file changes. The only modified file is a PHP source file (`functions/ai-admin.php`), which is legitimate source code that should not be ignored.
